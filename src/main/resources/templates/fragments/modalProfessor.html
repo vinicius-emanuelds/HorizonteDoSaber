@@ -1,0 +1,75 @@
+<!-- Modal de Cadastro/Edição de Professor -->
+<div th:fragment="modalProfessor">
+    <!-- Modal -->
+    <div class="modal fade" id="modalProfessor" tabindex="-1" aria-labelledby="modalProfessorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Header do Modal -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalProfessorLabel">
+                        <i class="bi bi-person-plus me-2"></i>
+                        <span id="tituloModal">Novo Professor</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body do Modal -->
+                <div class="modal-body">
+                    <form id="formProfessor" novalidate>
+
+                        <!-- Seção: Dados Pessoais -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-person-circle me-2"></i>Dados Pessoais
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Nome Completo -->
+                                <div class="col-md-8">
+                                    <label for="nome" class="form-label">Nome Completo <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nome" name="name"
+                                        placeholder="Digite o nome completo" required>
+                                    <div class="invalid-feedback">Por favor, informe o nome completo.</div>
+                                </div>
+                                <!-- CPF -->
+                                <div class="col-md-4 mt-3">
+                                    <label for="cpf" class="form-label">CPF (Sem Pontuação)<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cpf" name="cpf"
+                                        placeholder="00000000000" maxlength="11" required>
+                                    <div class="invalid-feedback">CPF inválido.</div>
+                                </div>
+                            </div>
+                            <!-- Seção: Dados Acadêmicos -->
+                            <h6 class="text-primary border-bottom pb-2 mb-3 mt-3">
+                                <i class="bi bi-mortarboard me-2"></i>Dados Acadêmicos
+                            </h6>
+
+                            <div class="row g-3">
+
+                                <!-- E-mail -->
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">E-mail <span
+                                            class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        placeholder="Professor@exemplo.com" required>
+                                    <div class="invalid-feedback">Por favor, informe um e-mail válido.</div>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" form="formProfessor" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i> Salvar Professor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

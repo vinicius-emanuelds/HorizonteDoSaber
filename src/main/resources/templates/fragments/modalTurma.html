@@ -1,0 +1,74 @@
+<!-- Modal de Cadastro/Edição de Turma -->
+<div th:fragment="modalTurma">
+    <!-- Modal -->
+    <div class="modal fade" id="modalTurma" tabindex="-1" aria-labelledby="modalTurmaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Header do Modal -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTurmaLabel">
+                        <i class="bi bi-mortarboard me-2"></i>
+                        <span id="tituloModal">Nova Turma</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body do Modal -->
+                <div class="modal-body">
+                    <form id="formTurma" novalidate>
+                        <!-- Seção: Dados da Turma -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-mortarboard me-2"></i>Dados da Turma
+                            </h6>
+
+                            <div class="row g-3">
+
+                                <div class="col-md-8">
+                                    <label for="turma" class="form-label">Semestre <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="turma" name="semestre"
+                                        placeholder="Ex: 2025-1, 2025-2, etc." required>
+                                    <div class="invalid-feedback">Por favor, informe o Semestre.</div>
+                                </div>
+                            </div>
+
+                            <h6 class="text-primary border-bottom pb-2 mb-3 mt-5">
+                                <i class="bi bi-person-circle me-2"></i>Dados da Turma
+                            </h6>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="professor" class="form-label">Professor<span
+                                            class="text-danger">*</span></label>
+                                    <select class="form-select" id="professor" name="professorId" placeholder="Por favor, informe o Professor." required>
+                                        <option value="">Selecione um Professor...</option>
+                                    </select>
+                                    <!-- <div class="invalid-feedback">Por favor, informe o Professor.</div> -->
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="disciplina" class="form-label">Disciplina<span
+                                            class="text-danger">*</span></label>
+                                    <select class="form-select" id="disciplina" name="disciplinaId" required>
+                                        <option value="">Selecione uma Disciplina...</option>
+                                    </select>
+                                    <div class="invalid-feedback">Por favor, informe a Disciplina.</div>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="modal-footer bg-light mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" form="formTurma" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i> Salvar Nova Turma
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

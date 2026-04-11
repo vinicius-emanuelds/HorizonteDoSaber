@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-card-checklist me-2"></i>Matrículas</h5>
+            <div class="d-flex gap-2"><button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Nova Matrícula</button></div>
+        </div>
+        <table class="table"><thead><tr><th>Número</th><th>Aluno</th><th>RA</th><th>Turma</th><th>Ano</th><th>Situação</th><th>Ações</th></tr></thead>
+        <tbody id="lista"><tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
+    </div>
+    <div class="modal fade" id="modalMatricula" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Nova Matrícula</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body"><form id="form">
+            <div class="mb-3"><label class="form-label">Aluno *</label><select class="form-select" id="matAluno" required></select></div>
+            <div class="mb-3"><label class="form-label">Turma *</label><select class="form-select" id="matTurma" required></select></div>
+        </form></div>
+        <div class="modal-footer"><button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button><button class="btn-primary-custom" onclick="salvar()">Matricular</button></div>
+    </div></div></div>
+    <script src="/js/matricula.js"></script>
+</div></body></html>

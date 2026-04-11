@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body>
+    <div th:fragment="content">
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 animate-in">
+                <div class="stat-card blue">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Total de Alunos</div>
+                            <div class="stat-value" id="totalAlunos">0</div>
+                        </div>
+                        <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 animate-in">
+                <div class="stat-card green">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Professores</div>
+                            <div class="stat-value" id="totalProfessores">0</div>
+                        </div>
+                        <div class="stat-icon green"><i class="bi bi-person-badge-fill"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 animate-in">
+                <div class="stat-card orange">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Turmas Ativas</div>
+                            <div class="stat-value" id="totalTurmas">0</div>
+                        </div>
+                        <div class="stat-icon orange"><i class="bi bi-columns-gap"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 animate-in">
+                <div class="stat-card red">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Disciplinas</div>
+                            <div class="stat-value" id="totalDisciplinas">0</div>
+                        </div>
+                        <div class="stat-icon red"><i class="bi bi-journal-bookmark-fill"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-4">
+            <div class="col-md-8 animate-in">
+                <div class="chart-card">
+                    <h5><i class="bi bi-bar-chart me-2"></i>Matrículas por Série</h5>
+                    <canvas id="graficoSeries" height="280"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4 animate-in">
+                <div class="chart-card">
+                    <h5><i class="bi bi-pie-chart me-2"></i>Status das Matrículas</h5>
+                    <canvas id="graficoTurnos" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="/js/home.js"></script>
+    </div>
+</body>
+</html>

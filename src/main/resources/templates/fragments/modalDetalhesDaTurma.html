@@ -1,0 +1,114 @@
+<!-- Modal de Detalhes da Turma -->
+<div th:fragment="modalDetalhesTurma">
+    <!-- Modal -->
+    <div class="modal fade" id="modalDetalhesTurma" tabindex="-1" aria-labelledby="modalDetalhesTurmaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <!-- Header do Modal -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDetalhesTurmaLabel">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <span id="tituloModalDetalhes">Detalhes da Turma</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body do Modal -->
+                <div class="modal-body">
+                    
+                    <!-- Seção: Informações da Turma -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-primary border-bottom pb-2 mb-0 flex-grow-1">
+                                <i class="bi bi-mortarboard me-2"></i>Informações da Turma
+                            </h6>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary me-2" id="btnEditarTurma" onclick="alert(`Em Breve`)">
+                                    <i class="bi bi-pencil-square me-1"></i> Editar
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="btnExcluirTurma" onclick="alert(`Em Breve`)">
+                                    <i class="bi bi-trash me-1"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card com informações da turma -->
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="text-muted small">Código da Turma</label>
+                                        <p class="fw-bold mb-0" id="detalheCodigoTurma">-</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-muted small">Professor Responsável</label>
+                                        <p class="fw-bold mb-0" id="detalheProfessor">-</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-muted small">Disciplina</label>
+                                        <p class="fw-bold mb-0" id="detalheDisciplina">-</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-muted small">Total de Alunos</label>
+                                        <p class="fw-bold mb-0">
+                                            <span class="badge bg-primary" id="detalheTotalAlunos">0</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="text-muted small">Status</label>
+                                        <p class="mb-0">
+                                            <span class="badge bg-success" id="detalheStatus">Ativa</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção: Alunos Matriculados -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-primary border-bottom pb-2 mb-0 flex-grow-1">
+                                <i class="bi bi-people me-2"></i>Alunos Matriculados
+                            </h6>
+                            <button type="button" class="btn btn-sm btn-success" id="btnAdicionarAluno" onclick="abrirModalAdicionarAluno()">
+                                <i class="bi bi-person-plus me-1"></i> Adicionar Aluno
+                            </button>
+                        </div>
+
+                        <!-- Tabela de Alunos -->
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th style="width: 60px;">Avatar</th>
+                                        <th>Nome</th>
+                                        <th style="width: 150px;">Matrícula</th>
+                                        <th style="width: 250px;">E-mail</th>
+                                        <th style="width: 100px;" class="text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaAlunosTurma">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class="bi bi-hourglass-split me-2"></i>Carregando alunos...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

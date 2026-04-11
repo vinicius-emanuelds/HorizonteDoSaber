@@ -1,0 +1,74 @@
+<!-- Modal de Cadastro/Edição de Disciplina -->
+<div th:fragment="modalDisciplina">
+    <!-- Modal -->
+    <div class="modal fade" id="modalDisciplina" tabindex="-1" aria-labelledby="modalDisciplinaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Header do Modal -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDisciplinaLabel">
+                        <i class="bi bi-mortarboard me-2"></i>
+                        <span id="tituloModal">Nova Disciplina</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <!-- Body do Modal -->
+                <div class="modal-body">
+                    <form id="formDisciplina" novalidate>
+
+                        <!-- Seção: Dados da Disciplina -->
+                        <div class="mb-4">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="bi bi-mortarboard me-2"></i>Dados da Disciplina
+                            </h6>
+
+                            <div class="row g-3">
+                                <!-- Código da disciplina -->
+                                <div class="col-md-2">
+                                    <label for="cargaHoraria" class="form-label">Código</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" id ="codigo" name="code" class="form-control"
+                                        placeholder="Código" required>
+                                        <div class="invalid-feedback">Por favor, informe o Codigo.</div>
+                                    </div>
+                                </div>
+                                <!-- Nome da Disciplina -->
+                                <div class="col-md-8">
+                                    <label for="disciplina" class="form-label">Disciplina <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="disciplina" name="description"
+                                        placeholder="Digite o nome da Disciplina" required>
+                                    <div class="invalid-feedback">Por favor, informe a Disciplina.</div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Carga Horária -->
+                                <div class="col-md-4">
+                                    <label for="cargaHoraria" class="form-label">Carga Horária</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" id ="cargaHoraria" name="credits" class="form-control"
+                                        placeholder="EX: 4" required>
+                                        <span class="input-group-text">horas</span>
+                                        <div class="invalid-feedback">Por favor, informe a carga horária.</div>
+                                    </div>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="modal-footer bg-light mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" form="formDisciplina" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i> Salvar Disciplina
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

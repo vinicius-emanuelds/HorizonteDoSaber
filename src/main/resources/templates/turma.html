@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-columns-gap me-2"></i>Gestão de Turmas</h5>
+            <div class="d-flex gap-2">
+                <select class="form-select" id="filtroAno" onchange="buscar()" style="width:auto;border-radius:10px">
+                    <option value="2026">2026</option><option value="2025">2025</option>
+                </select>
+                <button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Nova Turma</button>
+            </div>
+        </div>
+        <div class="p-4" id="turmaContainer">
+            <div class="row g-4" id="cards_turmas"><div class="text-center py-4"><div class="spinner-border text-primary"></div></div></div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalTurma" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="modalTitle">Nova Turma</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body"><form id="form"><input type="hidden" id="turmaId">
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Ano Letivo *</label><input type="number" class="form-control" id="turmaAno" value="2026" required></div>
+                <div class="col-md-6"><label class="form-label">Série *</label><select class="form-select" id="turmaSerie" required>
+                    <option value="1">1º Ano</option><option value="2">2º Ano</option><option value="3">3º Ano</option><option value="4">4º Ano</option><option value="5">5º Ano</option>
+                </select></div>
+                <div class="col-md-6"><label class="form-label">Nome/ID *</label><input type="text" class="form-control" id="turmaNome" placeholder="Ex: A, B" required></div>
+                <div class="col-md-6"><label class="form-label">Turno *</label><select class="form-select" id="turmaTurno" required>
+                    <option value="MATUTINO">Matutino</option><option value="VESPERTINO">Vespertino</option>
+                </select></div>
+                <div class="col-12"><label class="form-label">Professor Regente *</label><select class="form-select" id="turmaProf" required></select></div>
+            </div>
+        </form></div>
+        <div class="modal-footer"><button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button><button class="btn-primary-custom" onclick="salvar()">Salvar</button></div>
+    </div></div></div>
+    <script src="/js/turma.js"></script>
+</div></body></html>

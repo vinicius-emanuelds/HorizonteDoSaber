@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-calendar-check me-2"></i>Registro de Frequência</h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <select class="form-select" id="filtroTurma" onchange="carregarFrequencia()" style="width:auto;border-radius:10px"><option value="">Selecione a turma</option></select>
+                <input type="date" class="form-control" id="filtroData" onchange="carregarFrequencia()" style="width:auto;border-radius:10px">
+            </div>
+        </div>
+        <div id="freqContainer" class="p-4">
+            <div class="empty-state"><i class="bi bi-calendar-check d-block"></i><p>Selecione uma turma e data para registrar frequência</p></div>
+        </div>
+    </div>
+    <script src="/js/frequencia.js"></script>
+</div></body></html>

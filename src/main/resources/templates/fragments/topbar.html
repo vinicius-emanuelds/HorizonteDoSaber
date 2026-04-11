@@ -1,0 +1,28 @@
+<div class="topbar" th:fragment="topbar">
+    <div class="page-title" th:text="${pageTitle}">Dashboard</div>
+    <div class="user-info">
+        <div>
+            <div class="user-name" id="topbarUserName">Carregando...</div>
+            <div class="user-role" id="topbarUserRole"></div>
+        </div>
+        <div class="user-avatar" id="topbarUserAvatar">?</div>
+    </div>
+</div>
+
+<script>
+window.addEventListener('load', function() {
+    if (!localStorage.getItem('token') && window.location.pathname !== '/login') {
+        window.location.replace('/login');
+        return;
+    }
+    const nome = localStorage.getItem('nome');
+    const login = localStorage.getItem('login');
+    const finalNome = (nome && nome !== "null") ? nome : ((login && login !== "null") ? login : 'Usuário');
+    const role = localStorage.getItem('role') || '';
+    const roleLabels = { 'ADMIN': 'Administrador', 'COORDENADOR': 'Coordenador', 'OPERADOR': 'Operador', 'PROFESSOR': 'Professor' };
+    
+    document.getElementById('topbarUserName').textContent = finalNome;
+    document.getElementById('topbarUserRole').textContent = roleLabels[role] || role;
+    document.getElementById('topbarUserAvatar').textContent = finalNome.charAt(0).toUpperCase();
+});
+</script>

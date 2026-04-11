@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body>
+    <div th:fragment="content">
+        <div class="data-card">
+            <div class="card-header-custom">
+                <h5><i class="bi bi-people me-2"></i>Gestão de Alunos</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="campoBusca" placeholder="Buscar por nome, RA ou CPF..." onkeyup="buscarAlunos()">
+                    </div>
+                    <select class="form-select" id="filtroStatus" onchange="buscarAlunos()" style="width:auto;border-radius:10px">
+                        <option value="">Todos</option>
+                        <option value="true">Ativos</option>
+                        <option value="false">Inativos</option>
+                    </select>
+                    <button class="btn-primary-custom" onclick="abrirModal()">
+                        <i class="bi bi-plus-lg"></i> Novo Aluno
+                    </button>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>RA</th>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>E-mail</th>
+                        <th>Responsável</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAlunos">
+                    <tr><td colspan="7" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalAluno" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAlunoTitle">Novo Aluno</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formAluno">
+                            <input type="hidden" id="alunoId">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label class="form-label">Nome Completo *</label>
+                                    <input type="text" class="form-control" id="alunoNome" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Data de Nascimento *</label>
+                                    <input type="date" class="form-control" id="alunoDataNasc" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">CPF *</label>
+                                    <input type="text" class="form-control" id="alunoCpf" maxlength="11" required placeholder="Somente números">
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">E-mail *</label>
+                                    <input type="email" class="form-control" id="alunoEmail" required>
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label">Nome do Responsável Legal *</label>
+                                    <input type="text" class="form-control" id="alunoResponsavel" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">CPF do Responsável *</label>
+                                    <input type="text" class="form-control" id="alunoCpfResp" maxlength="11" required placeholder="Somente números">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn-primary-custom" onclick="salvarAluno()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/js/aluno.js"></script>
+    </div>
+</body>
+</html>

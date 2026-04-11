@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-shield-lock me-2"></i>Gestão de Usuários</h5>
+            <div class="d-flex gap-2">
+                <div class="search-bar"><i class="bi bi-search"></i><input type="text" id="campoBusca" placeholder="Buscar usuário..." onkeyup="buscar()"></div>
+                <button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Novo Usuário</button>
+            </div>
+        </div>
+        <table class="table"><thead><tr><th>Código</th><th>Nome</th><th>Login</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="lista"><tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
+    </div>
+    <div class="modal fade" id="modalUsuario" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="modalTitle">Novo Usuário</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body"><form id="form"><input type="hidden" id="userId">
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Nome Completo *</label><input type="text" class="form-control" id="userNome" required></div>
+                <div class="col-md-6"><label class="form-label">E-mail *</label><input type="email" class="form-control" id="userEmail" required></div>
+                <div class="col-md-4"><label class="form-label">Login *</label><input type="text" class="form-control" id="userLogin" required></div>
+                <div class="col-md-4"><label class="form-label">Senha *</label><input type="password" class="form-control" id="userSenha" required></div>
+                <div class="col-md-4"><label class="form-label">Perfil *</label><select class="form-select" id="userRole" required>
+                    <option value="ADMIN">Administrador</option><option value="COORDENADOR">Coordenador</option><option value="OPERADOR">Operador</option><option value="PROFESSOR">Professor</option>
+                </select></div>
+            </div>
+        </form></div>
+        <div class="modal-footer"><button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button><button class="btn-primary-custom" onclick="salvar()">Salvar</button></div>
+    </div></div></div>
+    <script src="/js/usuario.js"></script>
+</div></body></html>

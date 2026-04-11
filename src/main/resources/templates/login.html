@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIGA Horizonte do Saber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-left">
+            <div style="margin-bottom: 24px">
+                <i class="bi bi-mortarboard-fill" style="font-size: 64px; opacity: 0.9"></i>
+            </div>
+            <h1>Horizonte do Saber</h1>
+            <p>Sistema Integrado de Gestão Acadêmica<br>
+               Escola de Ensino Fundamental • Desde 2005</p>
+            <div style="margin-top: 40px; display: flex; gap: 32px; opacity: 0.6; font-size: 13px">
+                <span><i class="bi bi-people me-1"></i> 280 Alunos</span>
+                <span><i class="bi bi-person-badge me-1"></i> 24 Funcionários</span>
+                <span><i class="bi bi-building me-1"></i> 1º ao 5º Ano</span>
+            </div>
+        </div>
+        <div class="login-right">
+            <div class="login-card">
+                <h2>Entrar no Sistema</h2>
+                <p class="subtitle">Insira suas credenciais de acesso</p>
+
+                <div class="login-error" id="loginError"></div>
+
+                <form id="loginForm" onsubmit="return realizarLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label">Usuário</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="border-radius: 10px 0 0 10px; border-right: none">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input type="text" class="form-control" id="loginInput" 
+                                   placeholder="Digite seu login" required
+                                   style="border-radius: 0 10px 10px 0; border-left: none">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="border-radius: 10px 0 0 10px; border-right: none">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password" class="form-control" id="senhaInput" 
+                                   placeholder="Digite sua senha" required
+                                   style="border-radius: 0 10px 10px 0; border-left: none">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-login" id="btnLogin">
+                        <span id="btnLoginText">Entrar</span>
+                        <span id="btnLoginSpinner" class="spinner-border spinner-border-sm" style="display:none"></span>
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 24px; font-size: 12px; color: var(--text-muted)">
+                    SIGA v2.0 • Horizonte do Saber © 2026
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    async function realizarLogin(e) {
+        e.preventDefault();
+        const errDiv = document.getElementById('loginError');
+        const btn = document.getElementById('btnLogin');
+        const btnText = document.getElementById('btnLoginText');
+        const spinner = document.getElementById('btnLoginSpinner');
+        errDiv.style.display = 'none';
+        btn.disabled = true;
+        btnText.textContent = 'Entrando...';
+        spinner.style.display = 'inline-block';
+
+        try {
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    login: document.getElementById('loginInput').value,
+                    senha: document.getElementById('senhaInput').value
+                })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || 'Credenciais inválidas');
+            }
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('login', data.login);
+            localStorage.setItem('nome', data.nome);
+            localStorage.setItem('primeiroAcesso', data.primeiroAcesso);
+            
+            btnText.textContent = 'Autenticado! Redirecionando...';
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 500);
+        } catch (err) {
+            errDiv.textContent = err.message;
+            errDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btnText.textContent = 'Entrar';
+            spinner.style.display = 'none';
+        }
+    }
+    // Se já tem token, redireciona
+    if (localStorage.getItem('token')) window.location.href = '/';
+    </script>
+</body>
+</html>

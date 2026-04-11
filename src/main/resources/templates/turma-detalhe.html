@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+    <div class="mb-3">
+        <button class="btn btn-sm btn-outline-secondary" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Voltar</button>
+    </div>
+    
+    <div class="row g-4 mb-4">
+        <div class="col-md-8">
+            <div class="data-card h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0" id="detalheNome">Carregando...</h4>
+                    <span class="badge bg-primary" id="detalheTurno">---</span>
+                </div>
+                <div class="text-muted mb-2"><i class="bi bi-calendar3 me-2"></i>Ano Letivo: <strong id="detalheAno">---</strong></div>
+                <div class="text-muted"><i class="bi bi-person-badge me-2"></i>Regente: <strong id="detalheProf">---</strong></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="data-card h-100 p-4 d-flex flex-column justify-content-center gap-3">
+                <button class="btn-primary-custom w-100" onclick="irParaNotas()"><i class="bi bi-clipboard-data me-2"></i>Lançar Notas</button>
+                <button class="btn-secondary-custom w-100" onclick="irParaFrequencia()"><i class="bi bi-calendar-check me-2"></i>Frequências Diárias</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-people me-2"></i>Alunos Matriculados</h5>
+            <span class="badge bg-secondary" id="totalAlunos">0 alunos</span>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>RA</th>
+                        <th>Nome do Aluno</th>
+                        <th>Status Matrícula</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAlunos">
+                    <tr><td colspan="3" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/js/turma-detalhe.js"></script>
+</div></body></html>

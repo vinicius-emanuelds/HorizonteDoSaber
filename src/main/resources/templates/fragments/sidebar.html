@@ -1,0 +1,68 @@
+
+<div th:fragment="sidebar">
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+            <div class="brand-text">
+                <h5>SIGA</h5>
+                <small>Horizonte do Saber</small>
+            </div>
+        </div>
+
+        <div class="nav-section">Principal</div>
+        <ul class="nav flex-column">
+            <li><a class="nav-link" href="/" id="nav-home"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+        </ul>
+
+        <div class="nav-section">Acadêmico</div>
+        <ul class="nav flex-column">
+            <li><a class="nav-link" href="/aluno" id="nav-aluno"><i class="bi bi-people"></i> Alunos</a></li>
+            <li><a class="nav-link" href="/professor" id="nav-professor"><i class="bi bi-person-badge"></i> Professores</a></li>
+            <li><a class="nav-link" href="/disciplina" id="nav-disciplina"><i class="bi bi-journal-bookmark"></i> Disciplinas</a></li>
+            <li><a class="nav-link" href="/turma" id="nav-turma"><i class="bi bi-columns-gap"></i> Turmas</a></li>
+            <li><a class="nav-link" href="/matricula" id="nav-matricula"><i class="bi bi-card-checklist"></i> Matrículas</a></li>
+        </ul>
+
+        <div class="nav-section">Pedagógico</div>
+        <ul class="nav flex-column">
+            <li><a class="nav-link" href="/nota" id="nav-nota"><i class="bi bi-clipboard-data"></i> Notas</a></li>
+            <li><a class="nav-link" href="/frequencia" id="nav-frequencia"><i class="bi bi-calendar-check"></i> Frequência</a></li>
+            <li><a class="nav-link" href="/relatorios" id="nav-relatorios"><i class="bi bi-file-earmark-pdf"></i> Relatórios</a></li>
+        </ul>
+
+        <div class="nav-section" id="navAdminSection" style="display:none">Administração</div>
+        <ul class="nav flex-column" id="navAdminLinks" style="display:none">
+            <li><a class="nav-link" href="/usuario" id="nav-usuario"><i class="bi bi-shield-lock"></i> Usuários</a></li>
+        </ul>
+
+        <div style="flex:1"></div>
+        <div style="position: absolute; bottom: 20px; left: 15px; right: 15px;">
+            <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2" onclick="logout()" style="box-shadow: 0 4px 6px rgba(0,0,0,0.1)">
+                <i class="bi bi-box-arrow-left"></i> Sair do Sistema
+            </button>
+        </div>
+    </nav>
+</div>
+
+<script>
+// Highlight active nav link
+document.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        if (link.getAttribute('href') === path) link.classList.add('active');
+    });
+    // Show admin section
+    const role = localStorage.getItem('role');
+    if (role === 'ADMIN') {
+        const sec = document.getElementById('navAdminSection');
+        const links = document.getElementById('navAdminLinks');
+        if (sec) sec.style.display = '';
+        if (links) links.style.display = '';
+    }
+});
+
+function logout() {
+    localStorage.clear();
+    window.location.replace('/login');
+}
+</script>
