@@ -91,10 +91,3 @@ src/
 | Lucas Vieira | Fullstack / DBA — banco de dados, consultas e suporte geral |
 
 ---
-
-## Sobre o projeto
-
-**Instituição:** FATEC Mogi Mirim — Curso de ADS  
-**Disciplina:** TCC 2025  
-**Cliente:** Escola de Ensino Fundamental Horizonte do Saber  
-**Solicitante:** Prof. Carlos Henrique Almeida — Diretor Geral
