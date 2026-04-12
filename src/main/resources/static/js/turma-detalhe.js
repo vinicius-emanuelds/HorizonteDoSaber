@@ -1,3 +1,4 @@
+//JS da entidade turma-detalhe
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 const urlParams = new URLSearchParams(window.location.search);

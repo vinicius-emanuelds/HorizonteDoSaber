@@ -1,3 +1,4 @@
+//JS da nota
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 // Suporte para vir redirecionado do turma-detalhe.html

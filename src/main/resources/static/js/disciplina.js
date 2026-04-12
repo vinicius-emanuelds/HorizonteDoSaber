@@ -1,3 +1,5 @@
+//JS da disciplina
+
 const API = '/api/disciplinas';
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

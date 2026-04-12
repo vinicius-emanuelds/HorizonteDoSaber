@@ -1,3 +1,4 @@
+//JS do professor
 const API = '/api/professores';
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

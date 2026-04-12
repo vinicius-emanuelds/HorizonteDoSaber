@@ -1,3 +1,4 @@
+//JS da usuário
 const API = '/api/usuarios';
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

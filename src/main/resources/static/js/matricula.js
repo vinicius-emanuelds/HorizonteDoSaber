@@ -1,3 +1,4 @@
+//JS da matricula
 const API = '/api/matriculas';
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

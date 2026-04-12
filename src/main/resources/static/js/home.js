@@ -1,3 +1,4 @@
+//JS do Index
 const API = '/api';
 const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

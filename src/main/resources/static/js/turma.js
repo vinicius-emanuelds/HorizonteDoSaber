@@ -1,3 +1,4 @@
+//JS da turma
 const API = '/api/turmas';
 const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 

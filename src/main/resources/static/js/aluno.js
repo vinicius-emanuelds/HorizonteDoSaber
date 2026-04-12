@@ -1,3 +1,5 @@
+//JS do Aluno
+
 const API = '/api/alunos';
 const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
