@@ -44,9 +44,6 @@ cd HorizonteDoSaber
 
 # 2. Suba o banco de dados com Docker
 docker-compose up -d
-
-# 3. Execute a aplicação
-./mvnw spring-boot:run
 ```
 
 O sistema vai estar disponível em `http://localhost:8080`.
