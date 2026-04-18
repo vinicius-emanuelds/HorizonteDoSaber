@@ -92,6 +92,18 @@ public class MatriculaService {
         return MatriculaResponse.from(matriculaRepository.save(m));
     }
 
+    @Transactional
+    public MatriculaResponse concluir(Integer id) {
+        var m = findOrThrow(id);
+        if (m.getSituacao() != SituacaoMatricula.ATIVA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Somente matrículas ativas ou trancadas podem ser concluídas");
+        }
+        m.setSituacao(SituacaoMatricula.CONCLUIDA);
+        m.setDataCancelamento(LocalDate.now());
+        return MatriculaResponse.from(matriculaRepository.save(m));
+    }
+
     private Matricula findOrThrow(Integer id) {
         return matriculaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Matrícula não encontrada"));

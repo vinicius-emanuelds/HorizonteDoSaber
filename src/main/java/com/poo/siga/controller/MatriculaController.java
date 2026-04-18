@@ -64,4 +64,10 @@ public class MatriculaController {
                                                        @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(service.cancelar(id, body.getOrDefault("motivo", "")));
     }
+
+    @PatchMapping("/{id}/concluir")
+    public ResponseEntity<MatriculaResponse> concluir(@PathVariable Integer id,
+                                                       @RequestBody(required = false) Map<String, String> body) {
+        return ResponseEntity.ok(service.concluir(id));
+    }
 }

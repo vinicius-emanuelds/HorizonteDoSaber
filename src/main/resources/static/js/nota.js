@@ -143,30 +143,72 @@ async function salvarNota(inputNode, alunoId, periodoInt, tipoAvaliacao, notaIdO
 
     try {
         if (notaIdOriginal && notaIdOriginal !== 'undefined' && notaIdOriginal !== '') {
+            // Atualização simples via PUT — ID já é conhecido, não precisa recarregar
             await fetch(`/api/notas/${notaIdOriginal}`, {
                 method: 'PUT', headers: h(), body: JSON.stringify({ valor: num })
             });
+            inputNode.style.borderColor = '#27ae60';
+            inputNode.style.backgroundColor = '#eafaf1';
+            setTimeout(() => { inputNode.style.borderColor = ''; inputNode.style.backgroundColor = ''; }, 800);
         } else {
-            await fetch('/api/notas', {
+            // Nova nota via POST — após salvar, buscamos o ID gerado e atualizamos
+            // apenas o atributo onblur deste input, sem reconstruir a tabela inteira.
+            const res = await fetch('/api/notas', {
                 method: 'POST', headers: h(), body: JSON.stringify({
                     turmaId: turmaId, disciplinaId: disciplinaId,
                     alunoId: alunoId, periodo: periodoInt,
                     tipoAvaliacao: tipoAvaliacao, valor: num
                 })
             });
+            const novaNota = res.ok ? await res.json() : null;
+            if (novaNota && novaNota.id) {
+                // Atualiza o onblur do input com o novo ID para que futuras
+                // edições usem PUT em vez de POST, sem recarregar a tabela.
+                inputNode.setAttribute('onblur',
+                    `salvarNota(this, ${alunoId}, ${periodoInt}, '${tipoAvaliacao}', '${novaNota.id}')`);
+            }
+            inputNode.style.borderColor = '#27ae60';
+            inputNode.style.backgroundColor = '#eafaf1';
+            setTimeout(() => { inputNode.style.borderColor = ''; inputNode.style.backgroundColor = ''; }, 800);
         }
-        
-        inputNode.style.borderColor = '#27ae60';
-        inputNode.style.backgroundColor = '#eafaf1';
-        setTimeout(() => {
-            inputNode.style.borderColor = '';
-            inputNode.style.backgroundColor = '';
-            carregarNotas(); // Update grid and IDs
-        }, 800);
+
+        // Atualiza a coluna Média Final e Status da linha afetada sem recarregar a tabela
+        atualizarMediaLinha(inputNode);
 
     } catch (e) {
         inputNode.style.borderColor = 'red';
         console.error(e);
         alert('Falha ao salvar nota.');
+    }
+}
+
+/**
+ * Recalcula Média Final e Status da linha do input modificado,
+ * sem reconstruir o HTML da tabela.
+ */
+function atualizarMediaLinha(inputNode) {
+    const tr = inputNode.closest('tr');
+    if (!tr) return;
+
+    const inputs = tr.querySelectorAll('input[type="number"]');
+    // Ordem: BIM1, BIM2, BIM3, BIM4, REC
+    const vals = Array.from(inputs).map(i => i.value !== '' ? parseFloat(i.value) : null);
+    const [b1, b2, b3, b4, rec] = vals;
+
+    const tdMedia = tr.cells[tr.cells.length - 2];
+    const tdStatus = tr.cells[tr.cells.length - 1];
+    if (!tdMedia || !tdStatus) return;
+
+    if (b1 !== null && b2 !== null && b3 !== null && b4 !== null) {
+        let calc = (b1 + b2 + b3 + b4) / 4;
+        if (calc < 5 && rec !== null) calc = Math.max(calc, rec);
+        const aprovado = calc >= 5;
+        tdMedia.innerHTML = `<strong class="${aprovado ? 'text-success' : 'text-danger'}">${calc.toFixed(1)}</strong>`;
+        tdStatus.innerHTML = aprovado
+            ? '<span class="badge bg-success">Aprovado</span>'
+            : '<span class="badge bg-danger">Rec/Reprovado</span>';
+    } else {
+        tdMedia.innerHTML = '<strong>-</strong>';
+        tdStatus.innerHTML = '<span class="badge bg-secondary">Pendente</span>';
     }
 }

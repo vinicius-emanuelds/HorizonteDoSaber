@@ -10,6 +10,8 @@
         <table class="table"><thead><tr><th>Número</th><th>Aluno</th><th>RA</th><th>Turma</th><th>Ano</th><th>Situação</th><th>Ações</th></tr></thead>
         <tbody id="lista"><tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
     </div>
+
+    <!-- Modal: Nova Matrícula -->
     <div class="modal fade" id="modalMatricula" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title">Nova Matrícula</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body"><form id="form">
@@ -18,5 +20,31 @@
         </form></div>
         <div class="modal-footer"><button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button><button class="btn-primary-custom" onclick="salvar()">Matricular</button></div>
     </div></div></div>
+
+    <!-- Modal: Confirmação de Ação (Trancar / Cancelar) -->
+    <div class="modal fade" id="modalConfirmacao" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="confirmacaoTitulo">Confirmar Ação</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <p class="text-muted mb-3">Informe o motivo para registrar no histórico da matrícula.</p>
+            <div class="mb-3">
+                <label class="form-label">Motivo <span class="text-muted">(opcional)</span></label>
+                <textarea class="form-control" id="confirmacaoMotivo" rows="3" placeholder="Ex.: Problemas de saúde, mudança de cidade..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary-custom" data-bs-dismiss="modal">Voltar</button>
+            <button id="btnConfirmarAcao" class="btn-primary-custom" onclick="executarAcao()"><i class="bi bi-check-lg me-1"></i>Confirmar</button>
+        </div>
+    </div></div></div>
+
+    <!-- Badge extra para CONCLUIDA -->
+    <style>
+        .badge-status.concluida { background: rgba(52,152,219,.15); color: #2980b9; border: 1px solid #2980b9; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-status.trancada  { background: rgba(243,156,18,.15); color: #d68910; border: 1px solid #d68910; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    </style>
+
     <script src="/js/matricula.js"></script>
 </div></body></html>

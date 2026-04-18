@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const matsList = matsRes.content || [];
         
         const seriesCount = [0,0,0,0,0];
-        const statusCount = { ATIVA: 0, CANCELADA: 0, CONCLUIDA: 0 };
+        const statusCount = { ATIVA: 0, TRANCADA: 0, CANCELADA: 0, CONCLUIDA: 0 };
         
         matsList.forEach(m => {
             // Count current year's active students by series
@@ -56,10 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         new Chart(document.getElementById('graficoTurnos'), {
             type: 'doughnut',
             data: {
-                labels: ['Ativas', 'Canceladas', 'Concluídas'],
+                labels: ['Ativas', 'Trancadas', 'Canceladas', 'Concluídas'],
                 datasets: [{ 
-                    data: [statusCount.ATIVA, statusCount.CANCELADA, statusCount.CONCLUIDA],
-                    backgroundColor: ['#2ecc71', '#e74c3c', '#3498db'], 
+                    data: [statusCount.ATIVA, statusCount.TRANCADA, statusCount.CANCELADA, statusCount.CONCLUIDA],
+                    backgroundColor: ['#2ecc71', '#f39c12', '#e74c3c', '#3498db'], 
                     borderWidth: 0 
                 }]
             },
