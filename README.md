@@ -84,7 +84,7 @@ src/
 | Nome | Papel |
 |---|---|
 | Vinicius Silva | Manager / Backend — lógica do sistema, autenticação e deploy |
-| Marcelo Belloto | Frontend / UX — telas, integração e geração de relatórios |
+| Marcelo Belotto | Frontend / UX — telas, integração e geração de relatórios |
 | Lucas Vieira | Fullstack / DBA — banco de dados, consultas e suporte geral |
 
 ---

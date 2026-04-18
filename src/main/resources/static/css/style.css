@@ -42,6 +42,7 @@ body {
     width: var(--sidebar-width);
     background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
     min-height: 100vh;
+    height: 90vh;
     position: fixed;
     left: 0;
     top: 0;
@@ -50,6 +51,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 24px 16px;
+    overflow-y: scroll;
 }
 
 .sidebar .brand {
