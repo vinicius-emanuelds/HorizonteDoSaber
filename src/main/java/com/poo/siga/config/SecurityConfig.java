@@ -45,7 +45,7 @@ public class SecurityConfig {
                     "/nota", "/matricula", "/frequencia", "/usuario", "/turma-detalhe", "/relatorios").permitAll()
 
                 // GETs de API liberados (frontend carrega dados via fetch)
-                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                //.requestMatchers(HttpMethod.GET, "/api/**").permitAll() PROBLEMÁTICO, EXPÕE DADOS DE USUARIOS
 
                 // === USUARIOS: Somente ADMIN ===
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
