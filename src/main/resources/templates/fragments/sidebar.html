@@ -1,5 +1,7 @@
-<!-- Fragmento da Sidebar -->
+Fragmento da Sidebar
 <div th:fragment="sidebar">
+    <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <nav class="sidebar">
         <div class="brand">
             <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
@@ -70,5 +72,26 @@
             localStorage.clear();
             window.location.replace('/login');
         }
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            toggle.innerHTML = '&#10005;';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            toggle.innerHTML = '&#9776;';
+        }
+
+        toggle.addEventListener('click', () => {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        overlay.addEventListener('click', closeSidebar);
     </script>
 </div>

@@ -618,18 +618,73 @@ body {
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
-    .sidebar { width: 0; padding: 0; overflow: hidden; }
-    .main-content { margin-left: 0; }
-    .topbar { left: 0; }
+    .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+        padding: 24px 16px;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .topbar {
+        left: 0;
+        padding: 0 16px 0 68px; /* espaço para o botão hambúrguer */
+    }
+
     .login-page { flex-direction: column; }
     .login-left { padding: 30px 20px; }
     .login-left h1 { font-size: 28px; }
     .login-right { width: 100%; padding: 20px; }
 }
 
+/* === SIDEBAR TOGGLE (mobile) === */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    z-index: 1100;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: var(--transition);
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: flex;
+    }
+}
+
 /* === LOGOUT BTN === */
 .btn-logout {
-    background: rgba(231,76,60,0.1);
+    background: rgba(231, 76, 60, 0.1);
     color: var(--danger);
     border: none;
     padding: 10px 12px;
@@ -646,7 +701,10 @@ body {
     text-decoration: none;
 }
 
-.btn-logout:hover { background: var(--danger); color: #fff; }
+.btn-logout:hover {
+    background: var(--danger);
+    color: #fff;
+}
 
 /* === EMPTY STATE === */
 .empty-state {
@@ -655,5 +713,62 @@ body {
     color: var(--text-muted);
 }
 
-.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
-.empty-state p { font-size: 14px; }
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    font-size: 14px;
+}
+
+/* === TABLE RESPONSIVE (mobile cards) === */
+@media (max-width: 768px) {
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        margin: 8px 16px;
+        padding: 12px 16px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    /* Remove a regra global que zera border no último tr */
+    .table tbody tr:last-child td {
+        border-bottom: 1px solid var(--border) !important;
+    }
+
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border) !important;
+        font-size: 13px;
+        gap: 8px;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Só o último td de cada card remove a borda */
+    .table tbody tr td:last-child {
+        border-bottom: none !important;
+        justify-content: flex-end;
+        padding-top: 12px;
+    }
+}

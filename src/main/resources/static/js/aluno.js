@@ -28,13 +28,13 @@ function renderizar(alunos) {
         return;
     }
     tbody.innerHTML = alunos.map(a => `<tr>
-        <td><strong>${a.ra}</strong></td>
-        <td>${a.nome}</td>
-        <td>${formatCpf(a.cpf)}</td>
-        <td>${a.email}</td>
-        <td>${a.nomeResponsavel}</td>
-        <td><span class="badge-status ${a.ativo ? 'ativo' : 'inativo'}">${a.ativo ? 'Ativo' : 'Inativo'}</span></td>
-        <td>
+        <td data-label="RA"><strong>${a.ra}</strong></td>
+        <td data-label="Nome">${a.nome}</td>
+        <td data-label="CPF">${formatCpf(a.cpf)}</td>
+        <td data-label="E-Mail">${a.email}</td>
+        <td data-label="Responsável">${a.nomeResponsavel}</td>
+        <td data-label="Status"><span class="badge-status ${a.ativo ? 'ativo' : 'inativo'}">${a.ativo ? 'Ativo' : 'Inativo'}</span></td>
+        <td data-label="Ações">
             <button class="btn-action edit" onclick="editar(${a.id})" title="Editar"><i class="bi bi-pencil"></i></button>
             ${a.ativo ?
                 `<button class="btn-action delete" onclick="inativar(${a.id})" title="Inativar"><i class="bi bi-pause-circle"></i></button>` :
