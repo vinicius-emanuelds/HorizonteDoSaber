@@ -16,6 +16,7 @@ O sistema foi criado para substituir o controle manual feito em planilhas. Hoje 
 - Emissão de boletim e histórico escolar com exportação em PDF
 - Relatórios de desempenho, frequência e alunos em risco de reprovação
 
+> Desenvolvemos um protótipo do sistema para apresentar alguns fluxos principais e demonstrar a interface. Ele não tem todas as funcionalidades implementadas, mas serve para mostrar a estrutura geral e o potencial do projeto. Você pode acessar o protótipo clicando [aqui](https://www.figma.com/proto/cMB0IRz12lD2g79rk8YyYT/SIGA?page-id=0%3A1&node-id=4-92&p=f&viewport=-386%2C-3876%2C1.13&t=Psr38ZC7dUBmOJwT-1&scaling=contain&content-scaling=fixed%20Testem%20pfv).
 ---
 
 ## Tecnologias usadas
