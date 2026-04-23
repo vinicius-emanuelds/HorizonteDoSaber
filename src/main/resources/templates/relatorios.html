@@ -1,120 +1,299 @@
 <!DOCTYPE html>
 <!-- Modelo do relatorio -->
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
-<body><div th:fragment="content">
-    <div class="data-card no-print">
-        <div class="card-header-custom">
-            <h5><i class="bi bi-file-earmark-bar-graph me-2"></i>Gerador de Boletim / Histórico</h5>
-        </div>
-        <div class="p-4">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label text-muted">Selecionar Aluno</label>
-                    <input class="form-control" list="listaAlunos" id="filtroAluno" placeholder="Digite o nome ou RA..." onchange="limparTela()">
-                    <datalist id="listaAlunos"></datalist>
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+
+<body>
+    <div th:fragment="content">
+        <div class="data-card no-print">
+            <div class="card-header-custom">
+                <h5><i class="bi bi-file-earmark-bar-graph me-2"></i>Gerador de Boletim / Histórico</h5>
+            </div>
+            <div class="p-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label text-muted">Selecionar Aluno</label>
+                        <input class="form-control" list="listaAlunos" id="filtroAluno"
+                            placeholder="Digite o nome ou RA..." onchange="limparTela()">
+                        <datalist id="listaAlunos"></datalist>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted">Ano Letivo</label>
+                        <select class="form-select" id="filtroAno" onchange="limparTela()">
+                            <option value="2026">2026 (Atual)</option>
+                            <option value="2025">2025 (Fechado)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn-primary-custom w-100" onclick="gerarBoletim()"><i
+                                class="bi bi-check-circle me-2"></i>Gerar Boletim Escolar</button>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label text-muted">Ano Letivo</label>
-                    <select class="form-select" id="filtroAno" onchange="limparTela()"><option value="2026">2026 (Atual)</option><option value="2025">2025 (Fechado)</option></select>
-                </div>
-                <div class="col-md-4">
-                    <button class="btn-primary-custom w-100" onclick="gerarBoletim()"><i class="bi bi-check-circle me-2"></i>Gerar Boletim Escolar</button>
+                <div id="loadingIndicator" class="text-center py-3 d-none">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="text-muted mt-2">Processando médias...</p>
                 </div>
             </div>
-            <div id="loadingIndicator" class="text-center py-3 d-none">
-                <div class="spinner-border text-primary"></div>
-                <p class="text-muted mt-2">Processando médias...</p>
+        </div>
+
+        <!-- Printable Area -->
+        <div id="printArea" class="d-none mt-4">
+            <div class="print-header text-center mb-4">
+                <h2 class="mb-1">Escola Horizonte do Saber</h2>
+                <h4 class="text-secondary mb-3">Boletim Escolar - <span id="lblAno"></span></h4>
+                <div class="text-start p-3 border rounded shadow-sm bg-white"
+                    style="border-left: 5px solid var(--primary-color) !important;">
+                    <div class="row">
+                        <div class="col-6"><strong>Aluno:</strong> <span id="lblNome">---</span></div>
+                        <div class="col-6"><strong>RA:</strong> <span id="lblRa">---</span></div>
+                        <div class="col-6 mt-2"><strong>Responsável:</strong> <span id="lblResp">---</span></div>
+                        <div class="col-6 mt-2"><strong>Turma:</strong> <span id="lblTurma">---</span></div>
+                        <div class="col-6 mt-2"><strong>Presença Global:</strong> <span id="lblFreq"
+                                class="fw-bold">---</span></div>
+                        <div class="col-6 mt-2"><strong>Situação:</strong> <span id="lblSit" class="badge">---</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle bg-white shadow-sm" style="border-collapse: collapse;">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th rowspan="2" class="align-middle text-start">Disciplina</th>
+                            <th colspan="3">1º Bimestre</th>
+                            <th colspan="3">2º Bimestre</th>
+                            <th colspan="3">3º Bimestre</th>
+                            <th colspan="3">4º Bimestre</th>
+                            <th rowspan="2" class="align-middle">Média Final</th>
+                            <th rowspan="2" class="align-middle">Status</th>
+                        </tr>
+                        <tr>
+                            <th class="small text-muted">AV1</th>
+                            <th class="small text-muted">AV2</th>
+                            <th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
+                            <th class="small text-muted">AV1</th>
+                            <th class="small text-muted">AV2</th>
+                            <th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
+                            <th class="small text-muted">AV1</th>
+                            <th class="small text-muted">AV2</th>
+                            <th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
+                            <th class="small text-muted">AV1</th>
+                            <th class="small text-muted">AV2</th>
+                            <th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
+                        </tr>
+                    </thead>
+                    <tbody id="boletimBody">
+                    </tbody>
+                </table>
+
+                <div class="mt-4 border p-3 rounded bg-light" style="page-break-inside: avoid;">
+                    <h6 class="fw-bold mb-2">Quadro de Frequências (Dias Letivos)</h6>
+                    <div class="row text-center text-sm">
+                        <div class="col-3">
+                            <div class="text-muted small">Total Ministrado</div>
+                            <strong class="fs-5" id="lblFreqTotal">0</strong>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-success small">Presenças</div>
+                            <strong class="fs-5" id="lblFreqPresenca">0</strong>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-danger small">Faltas</div>
+                            <strong class="fs-5" id="lblFreqFalta">0</strong>
+                        </div>
+                        <div class="col-3">
+                            <div class="text-warning text-dark small">Justificadas</div>
+                            <strong class="fs-5" id="lblFreqJustificada">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between no-print mt-4">
+                    <button class="btn btn-light shadow-sm" onclick="limparTela()"><i
+                            class="bi bi-x me-2"></i>Fechar</button>
+                    <button class="btn btn-dark shadow-sm px-4" onclick="imprimirBoletim()"><i
+                            class="bi bi-printer me-2"></i>Imprimir / PDF A4</button>
+                </div>
             </div>
         </div>
+
+
+        <style>
+            @media print {
+                @page {
+                    size: A4 landscape;
+                    margin: 0.5cm;
+                }
+
+                body {
+                    background: white;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    min-width: 1122px !important;
+                    /* ✅ força viewport desktop */
+                }
+
+                .sidebar,
+                .topbar,
+                .no-print,
+                .sidebar-toggle {
+                    display: none !important;
+                }
+
+                .main-content {
+                    margin-left: 0 !important;
+                    margin-top: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                }
+
+                /* ✅ Reset forçado dos breakpoints mobile do Bootstrap */
+                /* Desfaz o que @media (max-width: 768px) faz na tabela */
+                .table thead {
+                    display: table-header-group !important;
+                }
+
+                .table tbody tr {
+                    display: table-row !important;
+                    background: none !important;
+                    border-radius: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+
+                .table tbody td {
+                    display: table-cell !important;
+                    border-bottom: 1px solid #444 !important;
+                    padding: 3px 5px !important;
+                    font-size: 10px !important;
+                }
+
+                .table tbody td::before {
+                    display: none !important;
+                    /* remove os data-label do mobile */
+                }
+
+                .table tbody tr:last-child td {
+                    border-bottom: 1px solid #444 !important;
+                }
+
+                .table-responsive {
+                    overflow: visible !important;
+                    width: 100% !important;
+                }
+
+                #printArea {
+                    display: block !important;
+                    width: 1122px;
+                    transform: scale(0.90);
+                    transform-origin: top center;
+                    font-size: 11px;
+                }
+
+                .badge {
+                    border: 1px solid #000;
+                    color: #000 !important;
+                    background: transparent !important;
+                    font-weight: bold;
+                }
+
+                .bg-white {
+                    background: transparent !important;
+                }
+
+                .shadow-sm {
+                    box-shadow: none !important;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    page-break-inside: avoid;
+                    font-size: 10px;
+                }
+
+                tr {
+                    page-break-inside: avoid;
+                }
+
+                th,
+                td {
+                    border: 1px solid #444 !important;
+                    padding: 3px 5px !important;
+                }
+
+                .bg-warning.bg-opacity-10 {
+                    background-color: #fcf4cd !important;
+                }
+
+                .bg-light {
+                    background-color: #f8f9fa !important;
+                }
+            }
+
+            @media (max-width: 768px) {
+
+                /* Esconde a tabela original e mostra os cards */
+                #boletimBody tr {
+                    display: block;
+                    background: var(--bg-card);
+                    border-radius: var(--radius);
+                    margin-bottom: 12px;
+                    border: 1px solid var(--border);
+                    box-shadow: var(--shadow);
+                    overflow: hidden;
+                }
+
+                /* Esconde o thead */
+                .table thead {
+                    display: none;
+                }
+
+                /* Cabeçalho do card: nome da disciplina + status */
+                #boletimBody tr td:first-child {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px 14px;
+                    background: var(--bg);
+                    border-bottom: 1px solid var(--border);
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+
+                /* Grid dos 4 bimestres */
+                #boletimBody tr .bim-mobile-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    border-bottom: 1px solid var(--border);
+                }
+
+                /* Esconde todas as tds normais de notas */
+                #boletimBody tr td:not(:first-child):not(:last-child):not(.media-final-td) {
+                    display: none;
+                }
+
+                /* Rodapé: média final */
+                #boletimBody tr td:nth-last-child(2) {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 14px;
+                    font-size: 16px;
+                }
+
+                #boletimBody tr td:last-child {
+                    display: none;
+                    /* status já está no header */
+                }
+            }
+        </style>
+
+        <script src="/js/relatorios.js"></script>
     </div>
+</body>
 
-    <!-- Printable Area -->
-    <div id="printArea" class="d-none mt-4">
-        <div class="print-header text-center mb-4">
-            <h2 class="mb-1">Escola Horizonte do Saber</h2>
-            <h4 class="text-secondary mb-3">Boletim Escolar - <span id="lblAno"></span></h4>
-            <div class="text-start p-3 border rounded shadow-sm bg-white" style="border-left: 5px solid var(--primary-color) !important;">
-                <div class="row">
-                    <div class="col-6"><strong>Aluno:</strong> <span id="lblNome">---</span></div>
-                    <div class="col-6"><strong>RA:</strong> <span id="lblRa">---</span></div>
-                    <div class="col-6 mt-2"><strong>Responsável:</strong> <span id="lblResp">---</span></div>
-                    <div class="col-6 mt-2"><strong>Turma:</strong> <span id="lblTurma">---</span></div>
-                    <div class="col-6 mt-2"><strong>Presença Global:</strong> <span id="lblFreq" class="fw-bold">---</span></div>
-                    <div class="col-6 mt-2"><strong>Situação:</strong> <span id="lblSit" class="badge">---</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle bg-white shadow-sm" style="border-collapse: collapse;">
-                <thead class="table-light text-center">
-                    <tr>
-                        <th rowspan="2" class="align-middle text-start">Disciplina</th>
-                        <th colspan="3">1º Bimestre</th>
-                        <th colspan="3">2º Bimestre</th>
-                        <th colspan="3">3º Bimestre</th>
-                        <th colspan="3">4º Bimestre</th>
-                        <th rowspan="2" class="align-middle">Média Final</th>
-                        <th rowspan="2" class="align-middle">Status</th>
-                    </tr>
-                    <tr>
-                        <th class="small text-muted">AV1</th><th class="small text-muted">AV2</th><th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
-                        <th class="small text-muted">AV1</th><th class="small text-muted">AV2</th><th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
-                        <th class="small text-muted">AV1</th><th class="small text-muted">AV2</th><th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
-                        <th class="small text-muted">AV1</th><th class="small text-muted">AV2</th><th class="small mt-1 px-1 bg-warning bg-opacity-10">Média</th>
-                    </tr>
-                </thead>
-                <tbody id="boletimBody">
-                </tbody>
-            </table>
-            
-            <div class="mt-4 border p-3 rounded bg-light" style="page-break-inside: avoid;">
-                <h6 class="fw-bold mb-2">Quadro de Frequências (Dias Letivos)</h6>
-                <div class="row text-center text-sm">
-                    <div class="col-3">
-                        <div class="text-muted small">Total Ministrado</div>
-                        <strong class="fs-5" id="lblFreqTotal">0</strong>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-success small">Presenças</div>
-                        <strong class="fs-5" id="lblFreqPresenca">0</strong>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-danger small">Faltas</div>
-                        <strong class="fs-5" id="lblFreqFalta">0</strong>
-                    </div>
-                    <div class="col-3">
-                        <div class="text-warning text-dark small">Justificadas</div>
-                        <strong class="fs-5" id="lblFreqJustificada">0</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between no-print mt-4">
-                 <button class="btn btn-light shadow-sm" onclick="limparTela()"><i class="bi bi-x me-2"></i>Fechar</button>
-                 <button class="btn btn-dark shadow-sm px-4" onclick="window.print()"><i class="bi bi-printer me-2"></i>Imprimir / PDF A4</button>
-            </div>
-        </div>
-    </div>
-    
-    <style>
-        @media print {
-            @page { size: A4; margin: 1cm; }
-            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .sidebar, .topbar, .no-print { display: none !important; }
-            .main-content { margin-left: 0 !important; margin-top: 0 !important; padding: 0 !important; width: 100% !important; }
-            #printArea { display: block !important; width: 100%; font-size: 12px; }
-            .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; font-weight: bold; }
-            .bg-white { background: transparent !important; }
-            .shadow-sm { box-shadow: none !important; }
-            table { width: 100%; border-collapse: collapse; page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            th, td { border: 1px solid #444 !important; padding: 4px !important; }
-            .bg-warning.bg-opacity-10 { background-color: #fcf4cd !important; }
-            .bg-light { background-color: #f8f9fa !important; }
-            .table-responsive { overflow: visible !important; }
-        }
-    </style>
-    
-    <script src="/js/relatorios.js"></script>
-</div></body></html>
+</html>
