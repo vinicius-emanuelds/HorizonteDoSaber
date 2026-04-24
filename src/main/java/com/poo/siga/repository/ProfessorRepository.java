@@ -16,6 +16,10 @@ public interface ProfessorRepository extends JpaRepository<Professor, Integer> {
     boolean existsByCpf(String cpf);
     Optional<Professor> findByCodigoFuncional(String codigoFuncional);
 
+    /** Retorna o maior número seq. do codigoFuncional (ex: "RF000015" -> 15). Null se vazio. */
+    @Query("SELECT MAX(CAST(SUBSTRING(p.codigoFuncional, 3) AS integer)) FROM Professor p WHERE p.codigoFuncional LIKE 'RF%'")
+    Integer findMaxCodigoFuncionalNumber();
+
     @Query("SELECT p FROM Professor p WHERE " +
            "(cast(:nome as String) IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', cast(:nome as String), '%'))) AND " +
            "(cast(:codigoFuncional as String) IS NULL OR p.codigoFuncional = :codigoFuncional) AND " +

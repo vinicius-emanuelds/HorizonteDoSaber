@@ -1,6 +1,5 @@
 //JS da usuário
 const API = '/api/usuarios';
-const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 document.addEventListener('DOMContentLoaded', () => { if (!localStorage.getItem('token')) { window.location.href='/login'; return; } buscar(); });
 
@@ -8,7 +7,7 @@ async function buscar() {
     const nome = document.getElementById('campoBusca').value;
     let url = `${API}?size=50&sort=nomeCompleto`;
     if (nome) url += `&nome=${encodeURIComponent(nome)}`;
-    const data = await (await fetch(url, { headers: h() })).json();
+    const data = await (await apiFetch(url)).json();
     renderizar(data.content || []);
 }
 
@@ -39,18 +38,18 @@ function abrirModal(u) {
     new bootstrap.Modal(document.getElementById('modalUsuario')).show();
 }
 
-async function editar(id) { abrirModal(await (await fetch(`${API}/${id}`, { headers: h() })).json()); }
+async function editar(id) { abrirModal(await (await apiFetch(`${API}/${id}`)).json()); }
 
 async function salvar() {
     const id = document.getElementById('userId').value;
     const body = { nomeCompleto: document.getElementById('userNome').value, email: document.getElementById('userEmail').value,
         login: document.getElementById('userLogin').value, senha: document.getElementById('userSenha').value || 'siga2026',
         role: document.getElementById('userRole').value };
-    const res = await fetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', headers: h(), body: JSON.stringify(body) });
+    const res = await apiFetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', body: JSON.stringify(body) });
     if (!res.ok) { alert((await res.json()).message || 'Erro'); return; }
     bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
     buscar();
 }
 
-async function inativar(id) { if (!confirm('Inativar?')) return; await fetch(`${API}/${id}/inativar`, { method: 'PATCH', headers: h() }); buscar(); }
-async function desbloquear(id) { await fetch(`${API}/${id}/desbloquear`, { method: 'PATCH', headers: h() }); buscar(); }
+async function inativar(id) { if (!confirm('Inativar?')) return; await apiFetch(`${API}/${id}/inativar`, { method: 'PATCH' }); buscar(); }
+async function desbloquear(id) { await apiFetch(`${API}/${id}/desbloquear`, { method: 'PATCH' }); buscar(); }

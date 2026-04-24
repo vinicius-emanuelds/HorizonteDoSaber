@@ -7,14 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Entity
 @Table(name = "matricula")
 public class Matricula {
-
-    private static final AtomicInteger SEQ = new AtomicInteger(1);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,10 +54,7 @@ public class Matricula {
     private LocalDate dataCancelamento;
 
     @PrePersist
-    public void gerarNumero() {
-        if (this.numero == null) {
-            this.numero = "MAT" + anoLetivo + String.format("%05d", SEQ.getAndIncrement());
-        }
+    public void prePersist() {
         if (this.dataMatricula == null) {
             this.dataMatricula = LocalDate.now();
         }

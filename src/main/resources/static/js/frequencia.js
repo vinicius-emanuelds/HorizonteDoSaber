@@ -1,7 +1,5 @@
 //JS da frequencia
 
-const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
-
 // Suporte para vir redirecionado do turma-detalhe.html
 const urlParams = new URLSearchParams(window.location.search);
 const initialTurmaId = urlParams.get('turma');
@@ -13,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function carregarTurmas() {
-    const data = await (await fetch('/api/turmas?size=100&ativo=true', { headers: h() })).json();
+    const data = await (await apiFetch('/api/turmas?size=100&ativo=true')).json();
     document.getElementById('filtroTurma').innerHTML = '<option value="">Selecione a turma</option>' +
         (data.content||[]).map(t => `<option value="${t.id}">Turma ${t.serie}º ${t.nome}</option>`).join('');
     
@@ -37,9 +35,9 @@ async function carregarFrequencia() {
 
     try {
         const [mats, freqs] = await Promise.all([
-            (await fetch(`/api/matriculas/turma/${turmaId}`, { headers: h() })).json(),
+            (await apiFetch(`/api/matriculas/turma/${turmaId}`)).json(),
             // Frequência global para o dia - usando disciplina genérica 1 para MVP
-            (await fetch(`/api/frequencias/turma/${turmaId}/disciplina/1?data=${data}`, { headers: h() })).json()
+            (await apiFetch(`/api/frequencias/turma/${turmaId}/disciplina/1?data=${data}`)).json()
         ]);
 
         if (!mats.length) { 
@@ -95,6 +93,7 @@ async function carregarFrequencia() {
 
     } catch (e) {
         console.error(e);
+        if (e.message && e.message.includes('expirada')) return;
         container.innerHTML = `<div class="alert alert-danger">Erro ao carregar dados da frequência.</div>`;
     }
 }
@@ -108,14 +107,14 @@ async function salvarFreq(alunoId, statusInput, originalId) {
 
     try {
         if (originalId && originalId !== 'undefined' && originalId !== '') {
-            await fetch(`/api/frequencias/${originalId}`, {
-                method: 'PUT', headers: h(), body: JSON.stringify({
+            await apiFetch(`/api/frequencias/${originalId}`, {
+                method: 'PUT', body: JSON.stringify({
                     turmaId: parseInt(turmaId), disciplinaId: 1, alunoId, data, status: statusInput
                 })
             });
         } else {
-            await fetch('/api/frequencias', {
-                method: 'POST', headers: h(), body: JSON.stringify({
+            await apiFetch('/api/frequencias', {
+                method: 'POST', body: JSON.stringify({
                     turmaId: parseInt(turmaId), disciplinaId: 1, alunoId, data, status: statusInput
                 })
             });
@@ -132,6 +131,7 @@ async function salvarFreq(alunoId, statusInput, originalId) {
         setTimeout(carregarFrequencia, 800);
 
     } catch (e) {
+        if (e.message && e.message.includes('expirada')) return;
         tdStatus.innerHTML = '<span class="badge bg-danger">Erro</span>';
         alert('Falha ao salvar a frequência');
     }

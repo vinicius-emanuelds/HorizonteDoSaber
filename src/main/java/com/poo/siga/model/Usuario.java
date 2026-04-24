@@ -9,14 +9,11 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-
-    private static final AtomicInteger SEQ = new AtomicInteger(1);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,9 +67,6 @@ public class Usuario {
 
     @PrePersist
     public void prePersist() {
-        if (this.codigo == null) {
-            this.codigo = "USR" + String.format("%05d", SEQ.getAndIncrement());
-        }
         if (this.dataCadastro == null) {
             this.dataCadastro = LocalDateTime.now();
         }

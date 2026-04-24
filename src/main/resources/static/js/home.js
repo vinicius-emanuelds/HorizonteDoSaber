@@ -1,15 +1,14 @@
 //JS do Index
 const API = '/api';
-const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!localStorage.getItem('token')) { window.location.href = '/login'; return; }
     try {
         const [alunos, profs, turmas, discs] = await Promise.all([
-            fetch(`${API}/alunos?size=1`, { headers: headers() }).then(r => r.json()),
-            fetch(`${API}/professores?size=1&ativo=true`, { headers: headers() }).then(r => r.json()),
-            fetch(`${API}/turmas?anoLetivo=2026&size=1`, { headers: headers() }).then(r => r.json()),
-            fetch(`${API}/disciplinas?size=1`, { headers: headers() }).then(r => r.json())
+            apiFetch(`${API}/alunos?size=1`).then(r => r.json()),
+            apiFetch(`${API}/professores?size=1&ativo=true`).then(r => r.json()),
+            apiFetch(`${API}/turmas?anoLetivo=2026&size=1`).then(r => r.json()),
+            apiFetch(`${API}/disciplinas?size=1`).then(r => r.json())
         ]);
         document.getElementById('totalAlunos').textContent = alunos.totalElements || 0;
         document.getElementById('totalProfessores').textContent = profs.totalElements || 0;
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Charts: Matrículas (Alunos por série) em vez de apenas turmas
     try {
-        const matsRes = await fetch(`${API}/matriculas?size=1000`, { headers: headers() }).then(r => r.json());
+        const matsRes = await apiFetch(`${API}/matriculas?size=1000`).then(r => r.json());
         const matsList = matsRes.content || [];
         
         const seriesCount = [0,0,0,0,0];

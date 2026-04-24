@@ -18,6 +18,13 @@ public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
     Optional<Aluno> findByRa(String ra);
     Optional<Aluno> findByCpf(String cpf);
 
+    /**
+     * Retorna o maior número seqüencial presente nos RAs cadastrados (ex: "RA000042" -> 42).
+     * Retorna null se não houver nenhum aluno.
+     */
+    @Query("SELECT MAX(CAST(SUBSTRING(a.ra, 3) AS integer)) FROM Aluno a WHERE a.ra LIKE 'RA%'")
+    Integer findMaxRaNumber();
+
     @Query("SELECT a FROM Aluno a WHERE " +
            "(cast(:nome as String) IS NULL OR LOWER(a.nome) LIKE LOWER(CONCAT('%', cast(:nome as String), '%'))) AND " +
            "(cast(:ra as String) IS NULL OR a.ra = :ra) AND " +

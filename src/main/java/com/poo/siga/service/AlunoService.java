@@ -37,6 +37,7 @@ public class AlunoService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF do aluno já cadastrado");
         }
         var aluno = new Aluno();
+        aluno.setRa(gerarProximoRa());
         aluno.setNome(req.nome());
         aluno.setDataNascimento(req.dataNascimento());
         aluno.setCpf(req.cpf());
@@ -44,6 +45,16 @@ public class AlunoService {
         aluno.setNomeResponsavel(req.nomeResponsavel());
         aluno.setCpfResponsavel(req.cpfResponsavel());
         return AlunoResponse.from(repository.save(aluno));
+    }
+
+    /**
+     * Gera o próximo RA consultando o maior valor já persistido no banco.
+     * Thread-safe via @Transactional na operação de criar.
+     */
+    private String gerarProximoRa() {
+        Integer maxNum = repository.findMaxRaNumber();
+        int proximo = (maxNum == null ? 0 : maxNum) + 1;
+        return "RA" + String.format("%06d", proximo);
     }
 
     @Transactional

@@ -6,14 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Data
 @Entity
 @Table(name = "disciplina")
 public class Disciplina {
-
-    private static final AtomicInteger SEQ = new AtomicInteger(1);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +29,4 @@ public class Disciplina {
 
     @Column(nullable = false)
     private boolean ativo = true;
-
-    @PrePersist
-    public void gerarCodigo() {
-        if (this.codigo == null) {
-            this.codigo = "DISC" + String.format("%04d", SEQ.getAndIncrement());
-        }
-    }
 }

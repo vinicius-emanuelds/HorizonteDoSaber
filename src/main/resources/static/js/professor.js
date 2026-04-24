@@ -1,6 +1,5 @@
 //JS do professor
 const API = '/api/professores';
-const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 document.addEventListener('DOMContentLoaded', () => { if (!localStorage.getItem('token')) { window.location.href='/login'; return; } buscarProfessores(); });
 
@@ -8,7 +7,7 @@ async function buscarProfessores() {
     const nome = document.getElementById('campoBusca').value;
     let url = `${API}?size=50&sort=nome`;
     if (nome) url += `&nome=${encodeURIComponent(nome)}`;
-    const res = await fetch(url, { headers: h() });
+    const res = await apiFetch(url);
     const data = await res.json();
     renderizar(data.content || []);
 }
@@ -33,16 +32,16 @@ function abrirModal(p) {
     new bootstrap.Modal(document.getElementById('modalProfessor')).show();
 }
 
-async function editar(id) { const r = await fetch(`${API}/${id}`, {headers:h()}); abrirModal(await r.json()); }
+async function editar(id) { const r = await apiFetch(`${API}/${id}`); abrirModal(await r.json()); }
 
 async function salvar() {
     const id = document.getElementById('profId').value;
     const body = { nome: document.getElementById('profNome').value, dataNascimento: document.getElementById('profDataNasc').value,
         cpf: document.getElementById('profCpf').value, email: document.getElementById('profEmail').value };
-    const res = await fetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', headers: h(), body: JSON.stringify(body) });
+    const res = await apiFetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', body: JSON.stringify(body) });
     if (!res.ok) { const e = await res.json(); alert(e.message||'Erro'); return; }
     bootstrap.Modal.getInstance(document.getElementById('modalProfessor')).hide();
     buscarProfessores();
 }
 
-async function inativar(id) { if(!confirm('Inativar?')) return; await fetch(`${API}/${id}/inativar`,{method:'PATCH',headers:h()}); buscarProfessores(); }
+async function inativar(id) { if(!confirm('Inativar?')) return; await apiFetch(`${API}/${id}/inativar`,{method:'PATCH'}); buscarProfessores(); }

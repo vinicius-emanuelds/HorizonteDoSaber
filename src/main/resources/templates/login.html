@@ -117,6 +117,18 @@
     }
     // Se já tem token, redireciona
     if (localStorage.getItem('token')) window.location.href = '/';
+
+    // Exibe aviso de sessão expirada quando redirecionado pelo auth.js
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired') === '1') {
+        const errDiv = document.getElementById('loginError');
+        errDiv.innerHTML = '<i class="bi bi-clock-history me-2"></i>Sua sessão expirou. Por favor, faça login novamente.';
+        errDiv.style.display = 'block';
+        errDiv.style.backgroundColor = '#fff3cd';
+        errDiv.style.color = '#856404';
+        errDiv.style.borderColor = '#ffc107';
+    }
+    
     </script>
 </body>
 </html>

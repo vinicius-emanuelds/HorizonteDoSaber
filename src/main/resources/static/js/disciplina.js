@@ -1,7 +1,6 @@
 //JS da disciplina
 
 const API = '/api/disciplinas';
-const h = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 document.addEventListener('DOMContentLoaded', () => { if (!localStorage.getItem('token')) { window.location.href='/login'; return; } buscar(); });
 
@@ -9,7 +8,7 @@ async function buscar() {
     const desc = document.getElementById('campoBusca').value;
     let url = `${API}?size=50&sort=descricao`;
     if (desc) url += `&descricao=${encodeURIComponent(desc)}`;
-    const data = await (await fetch(url, { headers: h() })).json();
+    const data = await (await apiFetch(url)).json();
     renderizar(data.content || []);
 }
 
@@ -31,15 +30,15 @@ function abrirModal(d) {
     new bootstrap.Modal(document.getElementById('modalDisciplina')).show();
 }
 
-async function editar(id) { abrirModal(await (await fetch(`${API}/${id}`, { headers: h() })).json()); }
+async function editar(id) { abrirModal(await (await apiFetch(`${API}/${id}`)).json()); }
 
 async function salvar() {
     const id = document.getElementById('discId').value;
     const body = { descricao: document.getElementById('discDescricao').value, cargaHorariaAnual: parseInt(document.getElementById('discCarga').value) };
-    const res = await fetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', headers: h(), body: JSON.stringify(body) });
+    const res = await apiFetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', body: JSON.stringify(body) });
     if (!res.ok) { alert((await res.json()).message || 'Erro'); return; }
     bootstrap.Modal.getInstance(document.getElementById('modalDisciplina')).hide();
     buscar();
 }
 
-async function inativar(id) { if(!confirm('Inativar?')) return; await fetch(`${API}/${id}/inativar`,{method:'PATCH',headers:h()}); buscar(); }
+async function inativar(id) { if(!confirm('Inativar?')) return; await apiFetch(`${API}/${id}/inativar`,{method:'PATCH'}); buscar(); }

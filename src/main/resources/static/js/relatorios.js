@@ -1,8 +1,4 @@
 //JS dos relatórios
-const h = () => ({
-  "Content-Type": "application/json",
-  Authorization: "Bearer " + localStorage.getItem("token"),
-});
 
 let listAlunos = [];
 let alunosMap = {};
@@ -18,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function carregarAlunos() {
   try {
     const data = await (
-      await fetch("/api/alunos?page=0&size=500", { headers: h() })
+      await apiFetch("/api/alunos?page=0&size=500")
     ).json();
     listAlunos = data.content || [];
     const datalist = document.getElementById("listaAlunos");
@@ -71,7 +67,7 @@ async function gerarBoletim() {
   try {
     // Encontrar turmas e matriculas do aluno
     const mats = await (
-      await fetch(`/api/matriculas/aluno/${aluno.id}`, { headers: h() })
+      await apiFetch(`/api/matriculas/aluno/${aluno.id}`)
     ).json();
     const mat = mats.find(
       (m) => String(m.anoLetivo) === ano && m.situacao === "ATIVA",
@@ -88,7 +84,7 @@ async function gerarBoletim() {
       turmaNome = `Turma ${mat.serie}º ${mat.turmaTurno} (Cod: ${mat.turmaId})`;
       // no MVP calculamos presenca global por fetch das frequencias global
       const freqs = await (
-        await fetch(`/api/frequencias/aluno/${aluno.id}`, { headers: h() })
+        await apiFetch(`/api/frequencias/aluno/${aluno.id}`)
       ).json();
 
       // Filter frequencias only from this class if possible, or all if global
@@ -108,7 +104,7 @@ async function gerarBoletim() {
 
     // Fetch das Notas
     const todasNotas = await (
-      await fetch(`/api/notas/aluno/${aluno.id}`, { headers: h() })
+      await apiFetch(`/api/notas/aluno/${aluno.id}`)
     ).json();
 
     // Agrupar disciplinas independentemente se ele tem turma
@@ -116,7 +112,7 @@ async function gerarBoletim() {
 
     // Let's get all disciplinas to list them even if they have no grades
     const discAPI = await (
-      await fetch("/api/disciplinas?size=100", { headers: h() })
+      await apiFetch("/api/disciplinas?size=100")
     ).json();
     const disciplinas = discAPI.content || [];
 

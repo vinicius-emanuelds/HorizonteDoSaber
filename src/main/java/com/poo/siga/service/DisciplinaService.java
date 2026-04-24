@@ -30,9 +30,15 @@ public class DisciplinaService {
     @Transactional
     public DisciplinaResponse criar(DisciplinaRequest req) {
         var d = new Disciplina();
+        d.setCodigo(gerarCodigo());
         d.setDescricao(req.descricao());
         d.setCargaHorariaAnual(req.cargaHorariaAnual());
         return DisciplinaResponse.from(repository.save(d));
+    }
+
+    private String gerarCodigo() {
+        Integer max = repository.findMaxCodigoNumber();
+        return "DISC" + String.format("%04d", (max == null ? 0 : max) + 1);
     }
 
     @Transactional

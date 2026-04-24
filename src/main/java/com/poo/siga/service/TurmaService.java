@@ -42,12 +42,18 @@ public class TurmaService {
         var professor = professorRepository.findById(req.professorRegenteId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor regente não encontrado"));
         var turma = new Turma();
+        turma.setCodigo(gerarCodigo());
         turma.setAnoLetivo(req.anoLetivo());
         turma.setSerie(req.serie());
         turma.setNome(req.nome());
         turma.setTurno(req.turno());
         turma.setProfessorRegente(professor);
         return TurmaResponse.from(turmaRepository.save(turma));
+    }
+
+    private String gerarCodigo() {
+        Integer max = turmaRepository.findMaxCodigoNumber();
+        return "TUR" + String.format("%05d", (max == null ? 0 : max) + 1);
     }
 
     @Transactional

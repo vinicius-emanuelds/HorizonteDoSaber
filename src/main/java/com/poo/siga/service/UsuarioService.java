@@ -40,6 +40,7 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Login já existe");
         }
         var u = new Usuario();
+        u.setCodigo(gerarCodigo());
         u.setNomeCompleto(req.nomeCompleto());
         u.setEmail(req.email());
         u.setLogin(req.login());
@@ -54,6 +55,11 @@ public class UsuarioService {
             u.setProfessor(professor);
         }
         return UsuarioResponse.from(repository.save(u));
+    }
+
+    private String gerarCodigo() {
+        Integer max = repository.findMaxCodigoNumber();
+        return "USR" + String.format("%05d", (max == null ? 0 : max) + 1);
     }
 
     @Transactional

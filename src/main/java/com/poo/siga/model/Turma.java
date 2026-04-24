@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Entity
@@ -17,8 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     @UniqueConstraint(columnNames = {"ano_letivo", "serie", "nome", "turno"})
 })
 public class Turma {
-
-    private static final AtomicInteger SEQ = new AtomicInteger(1);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,13 +52,6 @@ public class Turma {
 
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TurmaDisciplinaProfessor> disciplinasProfessores;
-
-    @PrePersist
-    public void gerarCodigo() {
-        if (this.codigo == null) {
-            this.codigo = "TUR" + String.format("%05d", SEQ.getAndIncrement());
-        }
-    }
 
     public String getIdentificacao() {
         return serie + "º " + nome + " - " + turno.name();

@@ -17,6 +17,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByLogin(String login);
     boolean existsByLogin(String login);
 
+    /** Retorna o maior número seq. do codigo (ex: "USR00025" -> 25). Null se vazio. */
+    @Query("SELECT MAX(CAST(SUBSTRING(u.codigo, 4) AS integer)) FROM Usuario u WHERE u.codigo LIKE 'USR%'")
+    Integer findMaxCodigoNumber();
+
     @Query("SELECT u FROM Usuario u WHERE " +
            "(cast(:nome as String) IS NULL OR LOWER(u.nomeCompleto) LIKE LOWER(CONCAT('%', cast(:nome as String), '%'))) AND " +
            "(:role IS NULL OR u.role = :role) AND " +

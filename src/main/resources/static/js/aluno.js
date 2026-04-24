@@ -1,7 +1,6 @@
 //JS do Aluno
 
 const API = '/api/alunos';
-const headers = () => ({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') });
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('token')) { window.location.href = '/login'; return; }
@@ -15,7 +14,7 @@ async function buscarAlunos() {
     if (nome) url += `&nome=${encodeURIComponent(nome)}`;
     if (ativo) url += `&ativo=${ativo}`;
     try {
-        const res = await fetch(url, { headers: headers() });
+        const res = await apiFetch(url);
         const data = await res.json();
         renderizar(data.content || []);
     } catch (e) { console.error(e); }
@@ -58,7 +57,7 @@ function abrirModal(a) {
 }
 
 async function editar(id) {
-    const res = await fetch(`${API}/${id}`, { headers: headers() });
+    const res = await apiFetch(`${API}/${id}`);
     const a = await res.json();
     abrirModal(a);
 }
@@ -76,20 +75,20 @@ async function salvarAluno() {
     const url = id ? `${API}/${id}` : API;
     const method = id ? 'PUT' : 'POST';
     try {
-        const res = await fetch(url, { method, headers: headers(), body: JSON.stringify(body) });
+        const res = await apiFetch(url, { method, body: JSON.stringify(body) });
         if (!res.ok) { const e = await res.json(); alert(e.message || 'Erro'); return; }
         bootstrap.Modal.getInstance(document.getElementById('modalAluno')).hide();
         buscarAlunos();
-    } catch (e) { alert('Erro ao salvar'); }
+    } catch (e) { if (e.message && e.message.includes('expirada')) return; alert('Erro ao salvar'); }
 }
 
 async function inativar(id) {
     if (!confirm('Deseja inativar este aluno?')) return;
-    await fetch(`${API}/${id}/inativar`, { method: 'PATCH', headers: headers() });
+    await apiFetch(`${API}/${id}/inativar`, { method: 'PATCH' });
     buscarAlunos();
 }
 
 async function ativar(id) {
-    await fetch(`${API}/${id}/ativar`, { method: 'PATCH', headers: headers() });
+    await apiFetch(`${API}/${id}/ativar`, { method: 'PATCH' });
     buscarAlunos();
 }

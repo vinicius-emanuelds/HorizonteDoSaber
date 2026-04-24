@@ -35,11 +35,17 @@ public class ProfessorService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
         }
         var professor = new Professor();
+        professor.setCodigoFuncional(gerarCodigoFuncional());
         professor.setNome(req.nome());
         professor.setDataNascimento(req.dataNascimento());
         professor.setCpf(req.cpf());
         professor.setEmail(req.email());
         return ProfessorResponse.from(repository.save(professor));
+    }
+
+    private String gerarCodigoFuncional() {
+        Integer max = repository.findMaxCodigoFuncionalNumber();
+        return "RF" + String.format("%06d", (max == null ? 0 : max) + 1);
     }
 
     @Transactional

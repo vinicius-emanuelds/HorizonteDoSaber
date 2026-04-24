@@ -16,6 +16,10 @@ public interface TurmaRepository extends JpaRepository<Turma, Integer> {
     List<Turma> findByAnoLetivo(Integer anoLetivo);
     List<Turma> findByAnoLetivoAndAtivo(Integer anoLetivo, boolean ativo);
 
+    /** Retorna o maior número seq. do codigo (ex: "TUR00010" -> 10). Null se vazio. */
+    @Query("SELECT MAX(CAST(SUBSTRING(t.codigo, 4) AS integer)) FROM Turma t WHERE t.codigo LIKE 'TUR%'")
+    Integer findMaxCodigoNumber();
+
     @Query("SELECT t FROM Turma t WHERE " +
            "(:anoLetivo IS NULL OR t.anoLetivo = :anoLetivo) AND " +
            "(:serie IS NULL OR t.serie = :serie) AND " +
