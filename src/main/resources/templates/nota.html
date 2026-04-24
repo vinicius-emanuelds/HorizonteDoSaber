@@ -8,11 +8,18 @@
             <div class="d-flex gap-2 flex-wrap">
                 <select class="form-select" id="filtroTurma" onchange="carregarNotas()" style="width:auto;border-radius:10px"><option value="">Selecione a turma</option></select>
                 <select class="form-select" id="filtroDisciplina" onchange="carregarNotas()" style="width:auto;border-radius:10px"><option value="">Selecione a disciplina</option></select>
+                <select class="form-select" id="filtroPeriodo" onchange="carregarNotas()" style="width:auto;border-radius:10px">
+                    <option value="">Selecione o bimestre</option>
+                    <option value="1">1º Bimestre</option>
+                    <option value="2">2º Bimestre</option>
+                    <option value="3">3º Bimestre</option>
+                    <option value="4">4º Bimestre</option>
+                </select>
             </div>
         </div>
         <div id="notasContainer" class="p-4">
-            <div class="empty-state"><i class="bi bi-clipboard-data d-block"></i><p>Selecione uma turma e período para visualizar as notas</p></div>
+            <div class="empty-state"><i class="bi bi-clipboard-data d-block"></i><p>Selecione uma turma, disciplina e bimestre para visualizar as notas</p></div>
         </div>
     </div>
     <script src="/js/nota.js"></script>
-</div></body></html>
+</div></body></html>
