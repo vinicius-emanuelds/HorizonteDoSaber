@@ -29,12 +29,12 @@ public class MatriculaController {
 
     @GetMapping
     public ResponseEntity<Page<MatriculaResponse>> listar(
-            @RequestParam(required = false) Integer alunoId,
+            @RequestParam(required = false) String nomeAluno,
             @RequestParam(required = false) Integer turmaId,
             @RequestParam(required = false) Integer anoLetivo,
             @RequestParam(required = false) SituacaoMatricula situacao,
-            @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(service.listar(alunoId, turmaId, anoLetivo, situacao, pageable));
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(service.listar(nomeAluno, turmaId, anoLetivo, situacao, pageable));
     }
 
     @GetMapping("/turma/{turmaId}")
@@ -69,5 +69,17 @@ public class MatriculaController {
     public ResponseEntity<MatriculaResponse> concluir(@PathVariable Integer id,
                                                        @RequestBody(required = false) Map<String, String> body) {
         return ResponseEntity.ok(service.concluir(id));
+    }
+
+    @PatchMapping("/{id}/reativar")
+    @Operation(summary = "Reativa uma matrícula concluída ou trancada por engano")
+    public ResponseEntity<MatriculaResponse> reativar(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.reativar(id));
+    }
+
+    @PostMapping("/rematricula")
+    @Operation(summary = "Rematrícula em lote: transfere alunos de uma turma para outra")
+    public ResponseEntity<RematriculaResult> rematricular(@RequestBody @Valid RematriculaRequest req) {
+        return ResponseEntity.ok(service.rematricular(req));
     }
 }

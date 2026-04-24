@@ -5,8 +5,50 @@
     <div class="data-card">
         <div class="card-header-custom">
             <h5><i class="bi bi-card-checklist me-2"></i>Matrículas</h5>
-            <div class="d-flex gap-2"><button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Nova Matrícula</button></div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Nova Matrícula</button>
+                <button class="btn-secondary-custom" onclick="abrirModalRematricula()" title="Rematrícula em lote">
+                    <i class="bi bi-arrow-repeat"></i> Rematrícula em Lote
+                </button>
+            </div>
         </div>
+
+        <!-- Barra de Filtros -->
+        <div class="p-3 border-bottom d-flex gap-2 flex-wrap align-items-end">
+            <div style="flex:2;min-width:180px">
+                <label class="form-label mb-1 small fw-semibold">Nome do Aluno</label>
+                <input type="text" class="form-control" id="filtroNome" placeholder="Buscar por nome..." oninput="buscarComDelay()">
+            </div>
+            <div style="flex:2;min-width:180px">
+                <label class="form-label mb-1 small fw-semibold">Turma</label>
+                <select class="form-select" id="filtroTurma" onchange="buscar()">
+                    <option value="">Todas as turmas</option>
+                </select>
+            </div>
+            <div style="flex:1;min-width:140px">
+                <label class="form-label mb-1 small fw-semibold">Ano Letivo</label>
+                <select class="form-select" id="filtroAno" onchange="buscar()">
+                    <option value="">Todos</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                </select>
+            </div>
+            <div style="flex:1;min-width:130px">
+                <label class="form-label mb-1 small fw-semibold">Situação</label>
+                <select class="form-select" id="filtroSituacao" onchange="buscar()">
+                    <option value="">Todas</option>
+                    <option value="ATIVA">Ativa</option>
+                    <option value="TRANCADA">Trancada</option>
+                    <option value="CANCELADA">Cancelada</option>
+                    <option value="CONCLUIDA">Concluída</option>
+                </select>
+            </div>
+            <button class="btn-secondary-custom" onclick="limparFiltros()" style="align-self:flex-end">
+                <i class="bi bi-x-circle me-1"></i>Limpar
+            </button>
+        </div>
+
         <table class="table"><thead><tr><th>Número</th><th>Aluno</th><th>RA</th><th>Turma</th><th>Ano</th><th>Situação</th><th>Ações</th></tr></thead>
         <tbody id="lista"><tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
     </div>
@@ -40,10 +82,46 @@
         </div>
     </div></div></div>
 
-    <!-- Badge extra para CONCLUIDA -->
+    <!-- Modal: Rematrícula em Lote -->
+    <div class="modal fade" id="modalRematricula" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-arrow-repeat me-2"></i>Rematrícula em Lote</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-info py-2" style="font-size:13px">
+                <i class="bi bi-info-circle me-1"></i>
+                Selecione a turma de <strong>origem</strong> (ex: 1º A / 2025) e a turma de <strong>destino</strong> (ex: 2º A / 2026).
+                O sistema matriculará automaticamente todos os alunos ativos ou concluídos da turma de origem na turma de destino.
+                Alunos que já possuem matrícula ativa no ano de destino serão ignorados.
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Turma de Origem</label>
+                    <select class="form-select" id="remOrigem"></select>
+                    <small class="text-muted">Alunos com situação ATIVA ou CONCLUÍDA serão selecionados</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Turma de Destino</label>
+                    <select class="form-select" id="remDestino"></select>
+                    <small class="text-muted">Serão criadas novas matrículas nesta turma</small>
+                </div>
+            </div>
+            <div id="remResultado" class="mt-3 d-none"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary-custom" data-bs-dismiss="modal">Fechar</button>
+            <button id="btnExecutarRematricula" class="btn-primary-custom" onclick="executarRematricula()">
+                <i class="bi bi-arrow-repeat me-1"></i>Executar Rematrícula
+            </button>
+        </div>
+    </div></div></div>
+
+    <!-- Badge extra para situações -->
     <style>
         .badge-status.concluida { background: rgba(52,152,219,.15); color: #2980b9; border: 1px solid #2980b9; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .badge-status.trancada  { background: rgba(243,156,18,.15); color: #d68910; border: 1px solid #d68910; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-status.cancelada { background: rgba(231,76,60,.15); color: #c0392b; border: 1px solid #c0392b; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
     </style>
 
     <script src="/js/matricula.js"></script>

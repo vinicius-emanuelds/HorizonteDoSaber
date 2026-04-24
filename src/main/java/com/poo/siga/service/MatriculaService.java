@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,9 +25,9 @@ public class MatriculaService {
     private final TurmaRepository turmaRepository;
 
     @Transactional(readOnly = true)
-    public Page<MatriculaResponse> listar(Integer alunoId, Integer turmaId, Integer anoLetivo,
+    public Page<MatriculaResponse> listar(String nomeAluno, Integer turmaId, Integer anoLetivo,
                                            SituacaoMatricula situacao, Pageable pageable) {
-        return matriculaRepository.buscarComFiltros(alunoId, turmaId, anoLetivo, situacao, pageable)
+        return matriculaRepository.buscarComFiltros(nomeAluno, turmaId, anoLetivo, situacao, pageable)
                 .map(MatriculaResponse::from);
     }
 
@@ -57,6 +58,7 @@ public class MatriculaService {
         }
 
         var m = new Matricula();
+        m.setNumero(gerarNumero(turma.getAnoLetivo()));
         m.setAluno(aluno);
         m.setTurma(turma);
         m.setAnoLetivo(turma.getAnoLetivo());
@@ -102,6 +104,86 @@ public class MatriculaService {
         m.setSituacao(SituacaoMatricula.CONCLUIDA);
         m.setDataCancelamento(LocalDate.now());
         return MatriculaResponse.from(matriculaRepository.save(m));
+    }
+
+    @Transactional
+    public MatriculaResponse reativar(Integer id) {
+        var m = findOrThrow(id);
+        if (m.getSituacao() != SituacaoMatricula.CONCLUIDA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Somente matrículas concluídas ou trancadas podem ser reativadas");
+        }
+        // Garante que o aluno não possui outra matrícula ATIVA no mesmo ano
+        if (matriculaRepository.existsByAlunoIdAndAnoLetivoAndSituacao(
+                m.getAluno().getId(), m.getAnoLetivo(), SituacaoMatricula.ATIVA)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "Aluno já possui outra matrícula ativa neste ano letivo");
+        }
+        m.setSituacao(SituacaoMatricula.ATIVA);
+        m.setMotivoCancelamento(null);
+        m.setDataCancelamento(null);
+        return MatriculaResponse.from(matriculaRepository.save(m));
+    }
+
+    @Transactional
+    public RematriculaResult rematricular(RematriculaRequest req) {
+        var turmaOrigem = turmaRepository.findById(req.turmaOrigemId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma de origem não encontrada"));
+        var turmaDestino = turmaRepository.findById(req.turmaDestinoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma de destino não encontrada"));
+
+        if (turmaOrigem.getId().equals(turmaDestino.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "A turma de origem e destino não podem ser iguais");
+        }
+
+        // Busca alunos da turma origem (ATIVA ou CONCLUIDA)
+        var matriculasOrigem = matriculaRepository.findByTurmaId(turmaOrigem.getId())
+                .stream()
+                .filter(m -> m.getSituacao() == SituacaoMatricula.ATIVA ||
+                             m.getSituacao() == SituacaoMatricula.CONCLUIDA)
+                .toList();
+
+        int total = matriculasOrigem.size();
+        int matriculados = 0;
+        List<String> ignorados = new ArrayList<>();
+
+        for (var origem : matriculasOrigem) {
+            var aluno = origem.getAluno();
+            // Pula se já tem matrícula ATIVA no ano destino
+            if (matriculaRepository.existsByAlunoIdAndAnoLetivoAndSituacao(
+                    aluno.getId(), turmaDestino.getAnoLetivo(), SituacaoMatricula.ATIVA)) {
+                ignorados.add(aluno.getNome() + " (" + aluno.getRa() + ")");
+                continue;
+            }
+            if (!aluno.isAtivo()) {
+                ignorados.add(aluno.getNome() + " (inativo)");
+                continue;
+            }
+            var nova = new Matricula();
+            nova.setNumero(gerarNumero(turmaDestino.getAnoLetivo()));
+            nova.setAluno(aluno);
+            nova.setTurma(turmaDestino);
+            nova.setAnoLetivo(turmaDestino.getAnoLetivo());
+            nova.setSerie(turmaDestino.getSerie());
+            nova.setTurno(turmaDestino.getTurno());
+            nova.setDataMatricula(LocalDate.now());
+            nova.setSituacao(SituacaoMatricula.ATIVA);
+            matriculaRepository.save(nova);
+            matriculados++;
+        }
+
+        return new RematriculaResult(total, matriculados, ignorados.size(), ignorados);
+    }
+
+    /**
+     * Gera o próximo número de matrícula consultando o MAX do ano no banco.
+     * Thread-safe via @Transactional na operação de criar.
+     */
+    private String gerarNumero(int anoLetivo) {
+        String ano = String.valueOf(anoLetivo);
+        Integer max = matriculaRepository.findMaxNumeroByAno(ano);
+        return "MAT" + ano + String.format("%05d", (max == null ? 0 : max) + 1);
     }
 
     private Matricula findOrThrow(Integer id) {
