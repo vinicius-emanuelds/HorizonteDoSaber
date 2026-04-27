@@ -11,13 +11,13 @@ Fragmento da Sidebar
             </div>
         </div>
 
-        <div class="nav-section">Principal</div>
+        <div class="nav-section" >Principal</div>
         <ul class="nav flex-column">
             <li><a class="nav-link" href="/" id="nav-home"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
         </ul>
 
-        <div class="nav-section">Acadêmico</div>
-        <ul class="nav flex-column">
+        <div class="nav-section" th:if="${isAdmin || isCoordenador}">Acadêmico</div>
+        <ul class="nav flex-column" th:if="${isAdmin || isCoordenador}">
             <li><a class="nav-link" href="/aluno" id="nav-aluno"><i class="bi bi-people"></i> Alunos</a></li>
             <li><a class="nav-link" href="/professor" id="nav-professor"><i class="bi bi-person-badge"></i>
                     Professores</a></li>
@@ -28,18 +28,20 @@ Fragmento da Sidebar
                     Matrículas</a></li>
         </ul>
 
-        <div class="nav-section">Pedagógico</div>
-        <ul class="nav flex-column">
+        <div class="nav-section" th:if="${isAdmin || isCoordenador || isProfessor}">Pedagógico</div>
+        <ul class="nav flex-column" th:if="${isAdmin || isCoordenador || isProfessor}">
             <li><a class="nav-link" href="/nota" id="nav-nota"><i class="bi bi-clipboard-data"></i> Notas</a></li>
             <li><a class="nav-link" href="/frequencia" id="nav-frequencia"><i class="bi bi-calendar-check"></i>
                     Frequência</a></li>
-            <li><a class="nav-link" href="/relatorios" id="nav-relatorios"><i class="bi bi-file-earmark-pdf"></i>
+            <li><a th:if="${isAdmin || isCoordenador}" class="nav-link" href="/relatorios" id="nav-relatorios"><i class="bi bi-file-earmark-pdf"></i>
                     Relatórios</a></li>
         </ul>
 
-        <div class="nav-section" id="navAdminSection" style="display:none">Administração</div>
-        <ul class="nav flex-column" id="navAdminLinks" style="display:none">
-            <li><a class="nav-link" href="/usuario" id="nav-usuario"><i class="bi bi-shield-lock"></i> Usuários</a></li>
+        <div class="nav-section" th:if="${isAdmin}">Administração</div>
+        <ul class="nav flex-column" th:if="${isAdmin}">
+            <li><a class="nav-link" href="/usuario" id="nav-usuario">
+                    <i class="bi bi-shield-lock"></i> Usuários
+                </a></li>
         </ul>
 
         <div style="flex:1; margin-top: 12px;"></div>
@@ -58,14 +60,14 @@ Fragmento da Sidebar
             document.querySelectorAll('.sidebar .nav-link').forEach(link => {
                 if (link.getAttribute('href') === path) link.classList.add('active');
             });
-            // Show admin section
-            const role = localStorage.getItem('role');
-            if (role === 'ADMIN') {
-                const sec = document.getElementById('navAdminSection');
-                const links = document.getElementById('navAdminLinks');
-                if (sec) sec.style.display = '';
-                if (links) links.style.display = '';
-            }
+            // // Show admin section
+            // const role = localStorage.getItem('role');
+            // if (role === 'ADMIN') {
+            //     const sec = document.getElementById('navAdminSection');
+            //     const links = document.getElementById('navAdminLinks');
+            //     if (sec) sec.style.display = '';
+            //     if (links) links.style.display = '';
+            // }
         });
 
         function logout() {

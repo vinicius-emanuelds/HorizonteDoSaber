@@ -1,18 +1,27 @@
 /**
  * auth.js — Interceptor global de autenticação JWT.
- *
- * Substitui o `fetch` nativo por `apiFetch`, que:
- *  - Injeta o cabeçalho Authorization automaticamente
- *  - Intercepta respostas 401 (token expirado/inválido) e 403 (sem permissão)
- *    e redireciona para /login, limpando os dados de sessão do localStorage.
- *
- * Como usar nos demais JS:
- *   const res = await apiFetch('/api/alunos', { method: 'GET' });
  */
 
+// ─── Gerenciamento de cookie ──────────────────────────────────────────────────
+
 /**
- * Retorna os cabeçalhos padrão com o token JWT do localStorage.
+ * Salva o JWT em cookie com validade de 1 dia.
+ * O browser envia este cookie automaticamente em toda navegação de página,
+ * permitindo que o JwtAuthFilter autentique requisições SSR.
  */
+function setCookieJwt(token) {
+    const expira = new Date();
+    expira.setTime(expira.getTime() + (24 * 60 * 60 * 1000));
+    document.cookie = [
+        'jwt=' + token,
+        'expires=' + expira.toUTCString(),
+        'path=/',
+        'SameSite=Strict'
+    ].join('; ');
+}
+
+// ─── Headers para chamadas fetch ─────────────────────────────────────────────
+
 function authHeaders(extra = {}) {
     const token = localStorage.getItem('token');
     return {
@@ -22,12 +31,9 @@ function authHeaders(extra = {}) {
     };
 }
 
-/**
- * Wrapper do fetch com interceptação de 401/403.
- * Aceita os mesmos parâmetros do fetch nativo.
- */
+// ─── Wrapper fetch com interceptação 401/403 ─────────────────────────────────
+
 async function apiFetch(url, opts = {}) {
-    // Injeta headers de autenticação caso não sejam sobrescritos
     const options = {
         ...opts,
         headers: {
@@ -40,26 +46,29 @@ async function apiFetch(url, opts = {}) {
     try {
         response = await fetch(url, options);
     } catch (err) {
-        // Erro de rede (offline, CORS bloqueado etc.) — propaga normalmente
         throw err;
     }
 
     if (response.status === 401 || response.status === 403) {
         logout(true);
-        // Interrompe a cadeia de promessas do chamador
         throw new Error('Sessão expirada ou sem permissão. Redirecionando para login...');
     }
 
     return response;
 }
 
-/**
- * Encerra a sessão do usuário: limpa localStorage e redireciona para /login.
- * @param {boolean} expired - se true, passa query param ?expired=1 para exibir aviso na tela de login
- */
+// ─── Logout ──────────────────────────────────────────────────────────────────
+
 function logout(expired = false) {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     localStorage.removeItem('role');
+    localStorage.removeItem('login');
+    localStorage.removeItem('nome');
+    localStorage.removeItem('primeiroAcesso');
+
+    // Remove o cookie jwt para que o backend não reconheça mais a sessão
+    document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict';
+
     window.location.href = '/login' + (expired ? '?expired=1' : '');
 }
