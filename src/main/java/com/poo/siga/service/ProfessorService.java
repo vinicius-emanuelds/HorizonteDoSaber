@@ -40,6 +40,7 @@ public class ProfessorService {
         professor.setDataNascimento(req.dataNascimento());
         professor.setCpf(req.cpf());
         professor.setEmail(req.email());
+        if (req.especialidade() != null) professor.setEspecialidade(req.especialidade());
         return ProfessorResponse.from(repository.save(professor));
     }
 
@@ -55,6 +56,7 @@ public class ProfessorService {
         professor.setDataNascimento(req.dataNascimento());
         professor.setCpf(req.cpf());
         professor.setEmail(req.email());
+        if (req.especialidade() != null) professor.setEspecialidade(req.especialidade());
         return ProfessorResponse.from(repository.save(professor));
     }
 

@@ -97,6 +97,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/disciplinas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/disciplinas/**").hasRole("ADMIN")
 
+                        // === ANO LETIVO: Somente ADMIN pode criar/alterar/encerrar ===
+                        .requestMatchers(HttpMethod.POST, "/api/anos-letivos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/anos-letivos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/anos-letivos/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex

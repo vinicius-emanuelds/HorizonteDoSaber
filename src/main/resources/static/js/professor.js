@@ -14,9 +14,10 @@ async function buscarProfessores() {
 
 function renderizar(list) {
     const tb = document.getElementById('listaProfessores');
-    if (!list.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>Nenhum professor</p></div></td></tr>'; return; }
+    if (!list.length) { tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>Nenhum professor</p></div></td></tr>'; return; }
     tb.innerHTML = list.map(p => `<tr>
         <td><strong>${p.codigoFuncional}</strong></td><td>${p.nome}</td><td>${p.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4')}</td><td>${p.email}</td>
+        <td>${p.especialidadeDescricao || '-'}</td>
         <td><span class="badge-status ${p.ativo?'ativo':'inativo'}">${p.ativo?'Ativo':'Inativo'}</span></td>
         <td><button class="btn-action edit" onclick="editar(${p.id})"><i class="bi bi-pencil"></i></button>
             <button class="btn-action delete" onclick="inativar(${p.id})"><i class="bi bi-pause-circle"></i></button></td></tr>`).join('');
@@ -29,6 +30,7 @@ function abrirModal(p) {
     document.getElementById('profDataNasc').value = p?.dataNascimento || '';
     document.getElementById('profCpf').value = p?.cpf || '';
     document.getElementById('profEmail').value = p?.email || '';
+    document.getElementById('profEspecialidade').value = p?.especialidade || 'REGENTE';
     new bootstrap.Modal(document.getElementById('modalProfessor')).show();
 }
 
@@ -37,7 +39,7 @@ async function editar(id) { const r = await apiFetch(`${API}/${id}`); abrirModal
 async function salvar() {
     const id = document.getElementById('profId').value;
     const body = { nome: document.getElementById('profNome').value, dataNascimento: document.getElementById('profDataNasc').value,
-        cpf: document.getElementById('profCpf').value, email: document.getElementById('profEmail').value };
+        cpf: document.getElementById('profCpf').value, email: document.getElementById('profEmail').value, especialidade: document.getElementById('profEspecialidade').value };
     const res = await apiFetch(id ? `${API}/${id}` : API, { method: id?'PUT':'POST', body: JSON.stringify(body) });
     if (!res.ok) { const e = await res.json(); alert(e.message||'Erro'); return; }
     bootstrap.Modal.getInstance(document.getElementById('modalProfessor')).hide();

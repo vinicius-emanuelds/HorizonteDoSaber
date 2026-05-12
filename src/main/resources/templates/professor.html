@@ -13,8 +13,8 @@
                 <button class="btn-primary-custom" onclick="abrirModal()"><i class="bi bi-plus-lg"></i> Novo Professor</button>
             </div>
         </div>
-        <table class="table"><thead><tr><th>Código</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Status</th><th>Ações</th></tr></thead>
-        <tbody id="listaProfessores"><tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
+        <table class="table"><thead><tr><th>Código</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Especialidade</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody id="listaProfessores"><tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr></tbody></table>
     </div>
     <div class="modal fade" id="modalProfessor" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title" id="modalTitle">Novo Professor</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
@@ -23,7 +23,16 @@
                 <div class="col-md-8"><label class="form-label">Nome *</label><input type="text" class="form-control" id="profNome" required></div>
                 <div class="col-md-4"><label class="form-label">Data Nasc. *</label><input type="date" class="form-control" id="profDataNasc" required></div>
                 <div class="col-md-4"><label class="form-label">CPF *</label><input type="text" class="form-control" id="profCpf" maxlength="11" required></div>
-                <div class="col-md-8"><label class="form-label">E-mail *</label><input type="email" class="form-control" id="profEmail" required></div>
+                <div class="col-md-4"><label class="form-label">E-mail *</label><input type="email" class="form-control" id="profEmail" required></div>
+                <div class="col-md-4"><label class="form-label">Especialidade *</label>
+                    <select class="form-select" id="profEspecialidade" required>
+                        <option value="REGENTE">Regente</option>
+                        <option value="ARTES">Artes</option>
+                        <option value="EDUCACAO_FISICA">Educação Física</option>
+                        <option value="INFORMATICA">Informática</option>
+                        <option value="OUTROS">Outros</option>
+                    </select>
+                </div>
             </div>
         </form></div>
         <div class="modal-footer"><button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button><button class="btn-primary-custom" onclick="salvar()">Salvar</button></div>

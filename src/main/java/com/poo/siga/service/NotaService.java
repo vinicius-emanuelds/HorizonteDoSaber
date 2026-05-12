@@ -20,6 +20,7 @@ public class NotaService {
     private final TurmaRepository turmaRepository;
     private final DisciplinaRepository disciplinaRepository;
     private final AlunoRepository alunoRepository;
+    private final AnoLetivoService anoLetivoService;
 
     @Transactional(readOnly = true)
     public List<NotaResponse> listarPorTurmaEDisciplina(Integer turmaId, Integer disciplinaId, Integer periodo) {
@@ -41,6 +42,10 @@ public class NotaService {
     public NotaResponse lancar(NotaRequest req, String usuarioLogin) {
         var turma = turmaRepository.findById(req.turmaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada"));
+
+        // Regra r: bloqueia lançamentos quando o ano letivo está encerrado
+        anoLetivoService.validarAnoAberto(turma.getAnoLetivo());
+
         var disciplina = disciplinaRepository.findById(req.disciplinaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disciplina não encontrada"));
         var aluno = alunoRepository.findById(req.alunoId())
@@ -65,6 +70,8 @@ public class NotaService {
     public NotaResponse atualizar(Integer id, Double novoValor, String usuarioLogin) {
         var nota = notaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota não encontrada"));
+        // Regra r: bloqueia alterações quando o ano letivo está encerrado
+        anoLetivoService.validarAnoAberto(nota.getTurma().getAnoLetivo());
         nota.setValor(Math.round(novoValor * 10.0) / 10.0);
         nota.setDataLancamento(LocalDateTime.now());
         nota.setUsuarioLancamento(usuarioLogin);

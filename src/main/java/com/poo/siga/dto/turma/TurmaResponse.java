@@ -5,7 +5,8 @@ import com.poo.siga.model.Turma;
 public record TurmaResponse(
     Integer id, String codigo, Integer anoLetivo, Integer serie, String nome,
     String turno, Integer professorRegenteId, String professorRegenteNome,
-    boolean ativo, String identificacao
+    boolean ativo, String identificacao, Integer aulasPorDia,
+    Integer modeloGradeId, String modeloGradeNome
 ) {
     public static TurmaResponse from(Turma t) {
         return new TurmaResponse(
@@ -13,7 +14,9 @@ public record TurmaResponse(
             t.getTurno().name(),
             t.getProfessorRegente() != null ? t.getProfessorRegente().getId() : null,
             t.getProfessorRegente() != null ? t.getProfessorRegente().getNome() : null,
-            t.isAtivo(), t.getIdentificacao()
+            t.isAtivo(), t.getIdentificacao(), t.getAulasPorDia(),
+            t.getModeloGrade() != null ? t.getModeloGrade().getId() : null,
+            t.getModeloGrade() != null ? t.getModeloGrade().getNome() : null
         );
     }
 }

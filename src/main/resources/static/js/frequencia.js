@@ -17,28 +17,86 @@ async function carregarTurmas() {
     
     if (initialTurmaId) {
         document.getElementById('filtroTurma').value = initialTurmaId;
-        carregarFrequencia();
+        carregarGradeEAtualizarUI();
+    }
+}
+
+let gradeAtual = [];
+
+const diasDaSemanaJava = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+async function carregarGradeEAtualizarUI() {
+    const turmaId = document.getElementById('filtroTurma').value;
+    const dataVal = document.getElementById('filtroData').value;
+    const filtroAula = document.getElementById('filtroAula');
+    const container = document.getElementById('freqContainer');
+    
+    filtroAula.style.display = 'none';
+    filtroAula.innerHTML = '<option value="">Selecione a Aula</option>';
+    container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar-check d-block"></i><p>Selecione uma turma, data e aula</p></div>';
+
+    if (!turmaId || !dataVal) return;
+
+    try {
+        // Passa o login do professor para filtrar apenas suas disciplinas
+        const login = localStorage.getItem('login') || '';
+        const role = localStorage.getItem('role') || '';
+        const loginParam = role === 'PROFESSOR' ? `&login=${encodeURIComponent(login)}` : '';
+        
+        const res = await apiFetch(`/api/turmas/${turmaId}/grade?dummy=1${loginParam}`);
+        if (!res.ok) throw new Error();
+        gradeAtual = await res.json();
+        
+        // Determinar o dia da semana
+        const [y, m, d] = dataVal.split('-');
+        const dateObj = new Date(y, m - 1, d);
+        const jsDay = dateObj.getDay();
+        const javaDay = diasDaSemanaJava[jsDay];
+        
+        const aulasDoDia = gradeAtual.filter(g => g.diaSemana === javaDay).sort((a,b) => a.numeroAula - b.numeroAula);
+        
+        if (aulasDoDia.length === 0) {
+            container.innerHTML = '<div class="alert alert-warning">Não há aulas para esta turma neste dia' + (role === 'PROFESSOR' ? ' nas suas disciplinas' : '') + '.</div>';
+            return;
+        }
+        
+        aulasDoDia.forEach(aula => {
+            // Usa disciplinaId e disciplinaDescricao do novo GradeHorariaResponse DTO
+            filtroAula.innerHTML += `<option value="${aula.numeroAula}" data-disciplina-id="${aula.disciplinaId}">Aula ${aula.numeroAula} — ${aula.disciplinaDescricao}</option>`;
+        });
+        
+        filtroAula.style.display = 'block';
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="alert alert-danger">Erro ao carregar a grade horária da turma.</div>';
     }
 }
 
 async function carregarFrequencia() {
     const turmaId = document.getElementById('filtroTurma').value;
     const data = document.getElementById('filtroData').value;
+    const filtroAula = document.getElementById('filtroAula');
+    const numeroAula = filtroAula.value;
     const container = document.getElementById('freqContainer');
     
-    if (!turmaId || !data) {
-        container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar-check d-block"></i><p>Selecione uma turma e data</p></div>';
+    if (!turmaId || !data || !numeroAula) {
+        container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar-check d-block"></i><p>Selecione uma turma, data e aula</p></div>';
         return;
     }
+
+    const selectedOption = filtroAula.options[filtroAula.selectedIndex];
+    const disciplinaId = selectedOption.getAttribute('data-disciplina-id');
 
     container.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        const [mats, freqs] = await Promise.all([
-            (await apiFetch(`/api/matriculas/turma/${turmaId}`)).json(),
-            // Frequência global para o dia - usando disciplina genérica 1 para MVP
-            (await apiFetch(`/api/frequencias/turma/${turmaId}/disciplina/1?data=${data}`)).json()
+        const [mats, freqsRes] = await Promise.all([
+            apiFetch(`/api/matriculas/turma/${turmaId}`).then(r => r.json()),
+            apiFetch(`/api/frequencias/turma/${turmaId}/disciplina/${disciplinaId}?data=${data}`).then(r => r.json())
         ]);
+        
+        // A API de listar pode trazer de todas as aulas daquele dia, precisamos filtrar para a aula específica
+        const freqs = freqsRes.filter(f => f.numeroAula == numeroAula);
 
         if (!mats.length) { 
             container.innerHTML = '<div class="empty-state"><p>Nenhum aluno matriculado nesta turma</p></div>'; 
@@ -101,6 +159,9 @@ async function carregarFrequencia() {
 async function salvarFreq(alunoId, statusInput, originalId) {
     const turmaId = document.getElementById('filtroTurma').value;
     const data = document.getElementById('filtroData').value;
+    const filtroAula = document.getElementById('filtroAula');
+    const numeroAula = parseInt(filtroAula.value);
+    const disciplinaId = parseInt(filtroAula.options[filtroAula.selectedIndex].getAttribute('data-disciplina-id'));
     const tdStatus = document.getElementById(`td_status_${alunoId}`);
     
     tdStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary"></span>';
@@ -109,13 +170,13 @@ async function salvarFreq(alunoId, statusInput, originalId) {
         if (originalId && originalId !== 'undefined' && originalId !== '') {
             await apiFetch(`/api/frequencias/${originalId}`, {
                 method: 'PUT', body: JSON.stringify({
-                    turmaId: parseInt(turmaId), disciplinaId: 1, alunoId, data, status: statusInput
+                    turmaId: parseInt(turmaId), disciplinaId, alunoId, data, numeroAula, status: statusInput
                 })
             });
         } else {
             await apiFetch('/api/frequencias', {
                 method: 'POST', body: JSON.stringify({
-                    turmaId: parseInt(turmaId), disciplinaId: 1, alunoId, data, status: statusInput
+                    turmaId: parseInt(turmaId), disciplinaId, alunoId, data, numeroAula, status: statusInput
                 })
             });
         }

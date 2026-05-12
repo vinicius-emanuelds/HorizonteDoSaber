@@ -24,6 +24,7 @@ Fragmento da Sidebar
             <li><a class="nav-link" href="/disciplina" id="nav-disciplina"><i class="bi bi-journal-bookmark"></i>
                     Disciplinas</a></li>
             <li><a class="nav-link" href="/turma" id="nav-turma"><i class="bi bi-columns-gap"></i> Turmas</a></li>
+            <li><a class="nav-link" href="/modelos-grade" id="nav-modelos-grade"><i class="bi bi-grid-3x3-gap"></i> Modelos de Grade</a></li>
             <li><a class="nav-link" href="/matricula" id="nav-matricula"><i class="bi bi-card-checklist"></i>
                     Matrículas</a></li>
         </ul>
@@ -39,6 +40,9 @@ Fragmento da Sidebar
 
         <div class="nav-section" th:if="${isAdmin}">Administração</div>
         <ul class="nav flex-column" th:if="${isAdmin}">
+            <li><a class="nav-link" href="/ano-letivo" id="nav-ano-letivo">
+                    <i class="bi bi-calendar2-range"></i> Ano Letivo
+                </a></li>
             <li><a class="nav-link" href="/usuario" id="nav-usuario">
                     <i class="bi bi-shield-lock"></i> Usuários
                 </a></li>

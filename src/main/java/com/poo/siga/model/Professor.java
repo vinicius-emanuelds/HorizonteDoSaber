@@ -12,4 +12,8 @@ public class Professor extends Pessoa {
 
     @Column(unique = true, nullable = false)
     private String codigoFuncional;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private com.poo.siga.model.enums.EspecialidadeProfessor especialidade = com.poo.siga.model.enums.EspecialidadeProfessor.REGENTE;
 }

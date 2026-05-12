@@ -7,5 +7,6 @@ public record ProfessorRequest(
     @NotBlank @Size(min = 3, max = 100) String nome,
     @NotNull LocalDate dataNascimento,
     @NotBlank @Pattern(regexp = "\\d{11}") String cpf,
-    @NotBlank @Email String email
+    @NotBlank @Email String email,
+    @NotNull com.poo.siga.model.enums.EspecialidadeProfessor especialidade
 ) {}

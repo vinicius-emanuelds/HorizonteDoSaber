@@ -74,6 +74,9 @@ public class UsuarioService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor não encontrado"));
             u.setProfessor(professor);
         }
+        if (req.senha() != null && !req.senha().trim().isEmpty()) {
+            u.setSenha(passwordEncoder.encode(req.senha()));
+        }
         return UsuarioResponse.from(repository.save(u));
     }
 

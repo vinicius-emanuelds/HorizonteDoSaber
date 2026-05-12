@@ -94,6 +94,20 @@ public class HomeController {
         return "relatorios";
     }
 
+    @GetMapping("/ano-letivo")
+    public String anoLetivo(Model model, Authentication auth) {
+        model.addAttribute("pageTitle", "Ano Letivo");
+        adicionarRoles(model, auth);
+        return "ano-letivo";
+    }
+
+    @GetMapping("/modelos-grade")
+    public String modelosGrade(Model model, Authentication auth) {
+        model.addAttribute("pageTitle", "Modelos de Grade");
+        adicionarRoles(model, auth);
+        return "modelos-grade";
+    }
+
     private void adicionarRoles(Model model, Authentication auth) {
         Set<String> roles = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
