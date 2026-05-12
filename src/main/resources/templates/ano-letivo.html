@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!-- Página de Administração do Ano Letivo -->
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+
+    <!-- ══════════════════════════════════════════════════════
+         CABEÇALHO DA PÁGINA
+    ══════════════════════════════════════════════════════ -->
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-calendar2-range me-2"></i>Administração do Ano Letivo</h5>
+            <div class="d-flex gap-2" th:if="${isAdmin}">
+                <button class="btn-primary-custom" id="btnNovoAno" onclick="abrirModalNovo()">
+                    <i class="bi bi-plus-lg"></i> Novo Ano Letivo
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Alerta de status ── -->
+        <div id="statusAlert" class="mx-4 mt-3" style="display:none"></div>
+
+        <!-- ══════════════════════════════════════════════════════
+             TABELA DE ANOS LETIVOS
+        ══════════════════════════════════════════════════════ -->
+        <div class="p-4">
+            <div class="table-responsive">
+                <table class="table" id="tabelaAnos">
+                    <thead>
+                        <tr>
+                            <th>Ano</th>
+                            <th>Início</th>
+                            <th>Encerramento</th>
+                            <th>Dias Letivos</th>
+                            <th>Feriados</th>
+                            <th>Avaliações</th>
+                            <th>Status</th>
+                            <th th:if="${isAdmin}">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaAnos">
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="spinner-border text-primary"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         MODAL — CADASTRAR / EDITAR ANO LETIVO
+    ══════════════════════════════════════════════════════ -->
+    <div class="modal fade" id="modalAnoLetivo" tabindex="-1" aria-labelledby="modalAnoLetivoTitle">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAnoLetivoTitle">Novo Ano Letivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAnoLetivo">
+                        <input type="hidden" id="anoId">
+
+                        <!-- ── Dados básicos ── -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Ano *</label>
+                                <input type="number" class="form-control" id="anoNumero"
+                                       min="2020" max="2099" placeholder="Ex: 2027" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Data de Início *</label>
+                                <input type="date" class="form-control" id="anoDataInicio" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Data de Encerramento *</label>
+                                <input type="date" class="form-control" id="anoDataEncerramento" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Dias Letivos</label>
+                                <input type="number" class="form-control" id="anoDiasLetivos"
+                                       min="1" max="365" placeholder="Ex: 200">
+                            </div>
+                        </div>
+
+                        <!-- ── Regra de negócio info ── -->
+                        <div class="alert alert-info d-flex align-items-start gap-2 mb-4" role="alert">
+                            <i class="bi bi-info-circle-fill mt-1"></i>
+                            <div>
+                                <strong>Estrutura do ano letivo:</strong> 4 bimestres — cada bimestre possui
+                                <strong>AV1, AV2</strong> e uma <strong>Recuperação Bimestral (REC)</strong>.
+                                Turmas com <strong>5 aulas diárias</strong> de 45 min, intervalo após a 3ª aula.
+                                Frequência mínima exigida: <strong>75%</strong> da carga horária total.
+                                Ao encerrar o ano, <strong>nenhum novo lançamento</strong> de nota ou frequência será permitido.
+                            </div>
+                        </div>
+
+                        <!-- ── Feriados ── -->
+                        <div class="card mb-4" style="border-radius:12px">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0"><i class="bi bi-calendar-x me-2 text-danger"></i>Feriados</h6>
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="adicionarFeriado()">
+                                        <i class="bi bi-plus"></i> Adicionar Feriado
+                                    </button>
+                                </div>
+                                <div id="listaFeriados" class="row g-2">
+                                    <!-- itens adicionados dinamicamente -->
+                                </div>
+                                <p id="semFeriados" class="text-muted small mb-0">
+                                    Nenhum feriado cadastrado.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- ── Datas de Avaliação (por bimestre) ── -->
+                        <div class="card" style="border-radius:12px">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-pencil-square me-2 text-primary"></i>Semanas de Avaliação
+                                    </h6>
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            onclick="adicionarSemanaAvaliacao()">
+                                        <i class="bi bi-plus"></i> Adicionar Semana
+                                    </button>
+                                </div>
+                                <p class="text-muted small mb-2">
+                                    Informe as semanas de AV1/AV2/REC de cada bimestre (informativo).
+                                </p>
+                                <div id="listaDatasAvaliacao" class="row g-2">
+                                    <!-- itens adicionados dinamicamente -->
+                                </div>
+                                <p id="semDatasAv" class="text-muted small mb-0">
+                                    Nenhuma semana de avaliação cadastrada.
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn-primary-custom" id="btnSalvarAno" onclick="salvarAnoLetivo()">
+                        <i class="bi bi-floppy me-1"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         MODAL — VISUALIZAR ANO LETIVO (somente leitura)
+    ══════════════════════════════════════════════════════ -->
+    <div class="modal fade" id="modalDetalheAno" tabindex="-1" aria-labelledby="detalheAnoTitle">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalheAnoTitle">Detalhes do Ano Letivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detalheAnoBody">
+                    <!-- preenchido via JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         MODAL — CONFIRMAR ENCERRAMENTO
+    ══════════════════════════════════════════════════════ -->
+    <div class="modal fade" id="modalConfirmarEncerramento" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Encerramento
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Você está prestes a encerrar o <strong id="anoParaEncerrar"></strong>.
+                    </p>
+                    <div class="alert alert-danger mb-0">
+                        <i class="bi bi-lock-fill me-2"></i>
+                        <strong>Ação irreversível!</strong> Após o encerramento:
+                        <ul class="mb-0 mt-2">
+                            <li>Nenhum novo lançamento de <strong>nota</strong> será permitido</li>
+                            <li>Nenhum novo lançamento de <strong>frequência</strong> será permitido</li>
+                            <li>Os dados existentes são preservados para consulta</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-danger" id="btnConfirmarEncerramento" onclick="confirmarEncerramento()">
+                        <i class="bi bi-lock-fill me-1"></i> Encerrar Ano Letivo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/ano-letivo.js"></script>
+</div></body></html>
