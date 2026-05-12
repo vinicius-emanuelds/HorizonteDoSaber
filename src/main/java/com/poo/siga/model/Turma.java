@@ -47,8 +47,19 @@ public class Turma {
     @JoinColumn(name = "professor_regente_id")
     private Professor professorRegente;
 
+    @ManyToOne
+    @JoinColumn(name = "modelo_grade_id")
+    private ModeloGrade modeloGrade;
+
     @Column(nullable = false)
     private boolean ativo = true;
+
+    /**
+     * Quantidade de aulas por dia nesta turma.
+     * Regra fixa: 5 aulas de 45 min, intervalo após a 3ª, turno de ~4h.
+     */
+    @Column(nullable = false)
+    private Integer aulasPorDia = 5;
 
     @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TurmaDisciplinaProfessor> disciplinasProfessores;

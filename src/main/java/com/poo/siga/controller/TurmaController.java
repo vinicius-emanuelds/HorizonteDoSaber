@@ -1,5 +1,6 @@
 package com.poo.siga.controller;
 
+import com.poo.siga.dto.grade.GradeHorariaResponse;
 import com.poo.siga.dto.turma.*;
 import com.poo.siga.service.TurmaService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -58,6 +59,13 @@ public class TurmaController {
     public ResponseEntity<Void> inativar(@PathVariable Integer id) {
         service.inativar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/grade")
+    public ResponseEntity<List<GradeHorariaResponse>> getGrade(
+            @PathVariable Integer id,
+            @RequestParam(required = false) String login) {
+        return ResponseEntity.ok(service.getGradeHoraria(id, login));
     }
 
     @DeleteMapping("/{id}")

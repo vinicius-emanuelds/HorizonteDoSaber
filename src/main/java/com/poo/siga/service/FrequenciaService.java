@@ -20,6 +20,8 @@ public class FrequenciaService {
     private final TurmaRepository turmaRepository;
     private final DisciplinaRepository disciplinaRepository;
     private final AlunoRepository alunoRepository;
+    private final AnoLetivoService anoLetivoService;
+    private final GradeHorariaRepository gradeHorariaRepository;
 
     @Transactional(readOnly = true)
     public List<FrequenciaResponse> listarPorTurmaEData(Integer turmaId, Integer disciplinaId, String data) {
@@ -37,16 +39,29 @@ public class FrequenciaService {
     public FrequenciaResponse registrar(FrequenciaRequest req) {
         var turma = turmaRepository.findById(req.turmaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada"));
+
+        // Regra r: bloqueia lançamentos quando o ano letivo está encerrado
+        anoLetivoService.validarAnoAberto(turma.getAnoLetivo());
+
         var disciplina = disciplinaRepository.findById(req.disciplinaId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disciplina não encontrada"));
         var aluno = alunoRepository.findById(req.alunoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado"));
+
+        // Validar se a disciplina está na grade horária da turma para aquele dia e número de aula
+        var gradeOpt = gradeHorariaRepository.findByTurmaIdAndDiaSemanaAndNumeroAula(
+                turma.getId(), req.data().getDayOfWeek(), req.numeroAula());
+        if (gradeOpt.isEmpty() || !gradeOpt.get().getDisciplina().getId().equals(disciplina.getId())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, 
+                "A aula " + req.numeroAula() + " de " + req.data().getDayOfWeek() + " não corresponde à disciplina " + disciplina.getDescricao() + " na grade desta turma.");
+        }
 
         var f = new Frequencia();
         f.setTurma(turma);
         f.setDisciplina(disciplina);
         f.setAluno(aluno);
         f.setData(req.data());
+        f.setNumeroAula(req.numeroAula());
         f.setStatus(req.status());
         f.setJustificativa(req.justificativa());
         return FrequenciaResponse.from(frequenciaRepository.save(f));
@@ -56,6 +71,8 @@ public class FrequenciaService {
     public FrequenciaResponse atualizar(Integer id, FrequenciaRequest req) {
         var f = frequenciaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Frequência não encontrada"));
+        // Regra r: bloqueia alterações quando o ano letivo está encerrado
+        anoLetivoService.validarAnoAberto(f.getTurma().getAnoLetivo());
         f.setStatus(req.status());
         f.setJustificativa(req.justificativa());
         return FrequenciaResponse.from(frequenciaRepository.save(f));

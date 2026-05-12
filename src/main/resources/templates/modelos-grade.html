@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- Modelos de Grade -->
+<html xmlns:th="http://www.thymeleaf.org"
+    th:replace="~{layout :: layout(content=~{::content}, pageTitle=${pageTitle})}">
+<body><div th:fragment="content">
+
+    <div class="data-card">
+        <div class="card-header-custom">
+            <h5><i class="bi bi-grid-3x3-gap me-2"></i>Modelos de Grade Horária</h5>
+            <div class="d-flex gap-2 align-items-center">
+                <select class="form-select" id="filtroAno" onchange="buscar()" style="width:auto;border-radius:10px">
+                    <option value="2026">2026</option><option value="2025">2025</option>
+                </select>
+                <button class="btn-primary-custom" onclick="abrirModalNovo()">
+                    <i class="bi bi-plus-lg"></i> Novo Modelo
+                </button>
+            </div>
+        </div>
+        <div class="p-4" id="modelosContainer">
+            <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
+        </div>
+    </div>
+
+    <!-- Modal Criar/Editar -->
+    <div class="modal fade" id="modalModelo" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Novo Modelo de Grade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formModelo">
+                        <input type="hidden" id="modeloId">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label">Ano Letivo *</label>
+                                <input type="number" class="form-control" id="modeloAno" value="2026" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Série *</label>
+                                <select class="form-select" id="modeloSerie" required>
+                                    <option value="1">1º Ano</option><option value="2">2º Ano</option>
+                                    <option value="3">3º Ano</option><option value="4">4º Ano</option>
+                                    <option value="5">5º Ano</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nome do Modelo *</label>
+                                <input type="text" class="form-control" id="modeloNome" placeholder="Ex: Modelo A, Modelo B" required>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3 text-muted"><i class="bi bi-table me-1"></i>Grade Semanal (selecione a disciplina de cada slot)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center align-middle" id="tabelaGrade" style="font-size:13px">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="width:60px">Aula</th>
+                                        <th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gradeBody">
+                                    <!-- Gerado via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn-primary-custom" onclick="salvarModelo()">
+                        <i class="bi bi-floppy me-1"></i>Salvar Modelo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Grade -->
+    <div class="modal fade" id="modalVisualizar" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="visualizarTitle">Grade do Modelo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="visualizarBody"></div>
+                <div class="modal-footer">
+                    <button class="btn-secondary-custom" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/modelos-grade.js"></script>
+</div></body></html>

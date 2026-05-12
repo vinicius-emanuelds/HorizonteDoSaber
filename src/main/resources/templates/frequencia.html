@@ -6,8 +6,11 @@
         <div class="card-header-custom">
             <h5><i class="bi bi-calendar-check me-2"></i>Registro de Frequência</h5>
             <div class="d-flex gap-2 flex-wrap">
-                <select class="form-select" id="filtroTurma" onchange="carregarFrequencia()" style="width:auto;border-radius:10px"><option value="">Selecione a turma</option></select>
-                <input type="date" class="form-control" id="filtroData" onchange="carregarFrequencia()" style="width:auto;border-radius:10px">
+                <select class="form-select" id="filtroTurma" onchange="carregarGradeEAtualizarUI()" style="width:auto;border-radius:10px"><option value="">Selecione a turma</option></select>
+                <input type="date" class="form-control" id="filtroData" onchange="carregarGradeEAtualizarUI()" style="width:auto;border-radius:10px">
+                <select class="form-select" id="filtroAula" onchange="carregarFrequencia()" style="width:auto;border-radius:10px; display:none">
+                    <option value="">Selecione a Aula</option>
+                </select>
             </div>
         </div>
         <div id="freqContainer" class="p-4">
