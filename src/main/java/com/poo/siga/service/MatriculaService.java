@@ -57,16 +57,26 @@ public class MatriculaService {
                 "Aluno já possui matrícula ativa neste ano letivo");
         }
 
-        var m = new Matricula();
-        m.setNumero(gerarNumero(turma.getAnoLetivo()));
-        m.setAluno(aluno);
-        m.setTurma(turma);
-        m.setAnoLetivo(turma.getAnoLetivo());
-        m.setSerie(turma.getSerie());
-        m.setTurno(turma.getTurno());
-        m.setDataMatricula(LocalDate.now());
-        m.setSituacao(SituacaoMatricula.ATIVA);
-        return MatriculaResponse.from(matriculaRepository.save(m));
+        var matricula = new Matricula();
+        matricula.setNumero(gerarNumero(turma.getAnoLetivo()));
+        matricula.setAluno(aluno);
+        matricula.setTurma(turma);
+        matricula.setAnoLetivo(turma.getAnoLetivo());
+        matricula.setSerie(turma.getSerie());
+        matricula.setTurno(turma.getTurno());
+        matricula.setDataMatricula(LocalDate.now());
+        matricula.setSituacao(SituacaoMatricula.ATIVA);
+        return MatriculaResponse.from(matriculaRepository.save(matricula));
+        // var m = new Matricula();
+        // m.setNumero(gerarNumero(turma.getAnoLetivo()));
+        // m.setAluno(aluno);
+        // m.setTurma(turma);
+        // m.setAnoLetivo(turma.getAnoLetivo());
+        // m.setSerie(turma.getSerie());
+        // m.setTurno(turma.getTurno());
+        // m.setDataMatricula(LocalDate.now());
+        // m.setSituacao(SituacaoMatricula.ATIVA);
+        // return MatriculaResponse.from(matriculaRepository.save(m));
     }
 
     @Transactional
@@ -84,45 +94,76 @@ public class MatriculaService {
 
     @Transactional
     public MatriculaResponse cancelar(Integer id, String motivo) {
-        var m = findOrThrow(id);
-        if (m.getSituacao() == SituacaoMatricula.CANCELADA) {
+        var matricula = findOrThrow(id);
+        if (matricula.getSituacao() == SituacaoMatricula.CANCELADA) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Matrícula já cancelada");
         }
-        m.setSituacao(SituacaoMatricula.CANCELADA);
-        m.setMotivoCancelamento(motivo);
-        m.setDataCancelamento(LocalDate.now());
-        return MatriculaResponse.from(matriculaRepository.save(m));
+        matricula.setSituacao(SituacaoMatricula.CANCELADA);
+        matricula.setMotivoCancelamento(motivo);
+        matricula.setDataCancelamento(LocalDate.now());
+        return MatriculaResponse.from(matriculaRepository.save(matricula));
+        // var m = findOrThrow(id);
+        // if (m.getSituacao() == SituacaoMatricula.CANCELADA) {
+        //     throw new ResponseStatusException(HttpStatus.CONFLICT, "Matrícula já cancelada");
+        // }
+        // m.setSituacao(SituacaoMatricula.CANCELADA);
+        // m.setMotivoCancelamento(motivo);
+        // m.setDataCancelamento(LocalDate.now());
+        // return MatriculaResponse.from(matriculaRepository.save(m));
     }
 
     @Transactional
     public MatriculaResponse concluir(Integer id) {
-        var m = findOrThrow(id);
-        if (m.getSituacao() != SituacaoMatricula.ATIVA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+        var matricula = findOrThrow(id);
+        if (matricula.getSituacao() != SituacaoMatricula.ATIVA && matricula.getSituacao() != SituacaoMatricula.TRANCADA) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "Somente matrículas ativas ou trancadas podem ser concluídas");
         }
-        m.setSituacao(SituacaoMatricula.CONCLUIDA);
-        m.setDataCancelamento(LocalDate.now());
-        return MatriculaResponse.from(matriculaRepository.save(m));
+        matricula.setSituacao(SituacaoMatricula.CONCLUIDA);
+        matricula.setDataCancelamento(LocalDate.now());
+        return MatriculaResponse.from(matriculaRepository.save(matricula));
+        // var m = findOrThrow(id);
+        // if (m.getSituacao() != SituacaoMatricula.ATIVA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+        //     throw new ResponseStatusException(HttpStatus.CONFLICT,
+        //         "Somente matrículas ativas ou trancadas podem ser concluídas");
+        // }
+        // m.setSituacao(SituacaoMatricula.CONCLUIDA);
+        // m.setDataCancelamento(LocalDate.now());
+        // return MatriculaResponse.from(matriculaRepository.save(m));
     }
 
     @Transactional
     public MatriculaResponse reativar(Integer id) {
-        var m = findOrThrow(id);
-        if (m.getSituacao() != SituacaoMatricula.CONCLUIDA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+        var matricula = findOrThrow(id);
+        if (matricula.getSituacao() != SituacaoMatricula.CONCLUIDA && matricula.getSituacao() != SituacaoMatricula.TRANCADA) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "Somente matrículas concluídas ou trancadas podem ser reativadas");
         }
         // Garante que o aluno não possui outra matrícula ATIVA no mesmo ano
         if (matriculaRepository.existsByAlunoIdAndAnoLetivoAndSituacao(
-                m.getAluno().getId(), m.getAnoLetivo(), SituacaoMatricula.ATIVA)) {
+                matricula.getAluno().getId(), matricula.getAnoLetivo(), SituacaoMatricula.ATIVA)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "Aluno já possui outra matrícula ativa neste ano letivo");
         }
-        m.setSituacao(SituacaoMatricula.ATIVA);
-        m.setMotivoCancelamento(null);
-        m.setDataCancelamento(null);
-        return MatriculaResponse.from(matriculaRepository.save(m));
+        matricula.setSituacao(SituacaoMatricula.ATIVA);
+        matricula.setMotivoCancelamento(null);
+        matricula.setDataCancelamento(null);
+        return MatriculaResponse.from(matriculaRepository.save(matricula));
+        // var m = findOrThrow(id);
+        // if (m.getSituacao() != SituacaoMatricula.CONCLUIDA && m.getSituacao() != SituacaoMatricula.TRANCADA) {
+        //     throw new ResponseStatusException(HttpStatus.CONFLICT,
+        //         "Somente matrículas concluídas ou trancadas podem ser reativadas");
+        // }
+        // // Garante que o aluno não possui outra matrícula ATIVA no mesmo ano
+        // if (matriculaRepository.existsByAlunoIdAndAnoLetivoAndSituacao(
+        //         m.getAluno().getId(), m.getAnoLetivo(), SituacaoMatricula.ATIVA)) {
+        //     throw new ResponseStatusException(HttpStatus.CONFLICT,
+        //         "Aluno já possui outra matrícula ativa neste ano letivo");
+        // }
+        // m.setSituacao(SituacaoMatricula.ATIVA);
+        // m.setMotivoCancelamento(null);
+        // m.setDataCancelamento(null);
+        // return MatriculaResponse.from(matriculaRepository.save(m));
     }
 
     @Transactional
@@ -160,16 +201,26 @@ public class MatriculaService {
                 ignorados.add(aluno.getNome() + " (inativo)");
                 continue;
             }
-            var nova = new Matricula();
-            nova.setNumero(gerarNumero(turmaDestino.getAnoLetivo()));
-            nova.setAluno(aluno);
-            nova.setTurma(turmaDestino);
-            nova.setAnoLetivo(turmaDestino.getAnoLetivo());
-            nova.setSerie(turmaDestino.getSerie());
-            nova.setTurno(turmaDestino.getTurno());
-            nova.setDataMatricula(LocalDate.now());
-            nova.setSituacao(SituacaoMatricula.ATIVA);
-            matriculaRepository.save(nova);
+            var novaMatricula = new Matricula();
+            novaMatricula.setNumero(gerarNumero(turmaDestino.getAnoLetivo()));
+            novaMatricula.setAluno(aluno);
+            novaMatricula.setTurma(turmaDestino);
+            novaMatricula.setAnoLetivo(turmaDestino.getAnoLetivo());
+            novaMatricula.setSerie(turmaDestino.getSerie());
+            novaMatricula.setTurno(turmaDestino.getTurno());
+            novaMatricula.setDataMatricula(LocalDate.now());
+            novaMatricula.setSituacao(SituacaoMatricula.ATIVA);
+            matriculaRepository.save(novaMatricula);
+            // var nova = new Matricula();
+            // nova.setNumero(gerarNumero(turmaDestino.getAnoLetivo()));
+            // nova.setAluno(aluno);
+            // nova.setTurma(turmaDestino);
+            // nova.setAnoLetivo(turmaDestino.getAnoLetivo());
+            // nova.setSerie(turmaDestino.getSerie());
+            // nova.setTurno(turmaDestino.getTurno());
+            // nova.setDataMatricula(LocalDate.now());
+            // nova.setSituacao(SituacaoMatricula.ATIVA);
+            // matriculaRepository.save(nova);
             matriculados++;
         }
 

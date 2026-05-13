@@ -124,11 +124,16 @@ public class AnoLetivoService {
 
     // ─────────────────────── Utilitários privados ───────────────────────
 
-    private void preencherCampos(AnoLetivo al, AnoLetivoRequest req) {
-        al.setAno(req.ano());
-        al.setDataInicio(req.dataInicio());
-        al.setDataEncerramento(req.dataEncerramento());
-        al.setDiasLetivos(req.diasLetivos());
+    // private void preencherCampos(AnoLetivo al, AnoLetivoRequest req) {
+    //     al.setAno(req.ano());
+    //     al.setDataInicio(req.dataInicio());
+    //     al.setDataEncerramento(req.dataEncerramento());
+    //     al.setDiasLetivos(req.diasLetivos());
+    private void preencherCampos(AnoLetivo anoLetivo, AnoLetivoRequest req) {
+        anoLetivo.setAno(req.ano());
+        anoLetivo.setDataInicio(req.dataInicio());
+        anoLetivo.setDataEncerramento(req.dataEncerramento());
+        anoLetivo.setDiasLetivos(req.diasLetivos());
         
         // Se a lista de feriados vier vazia (nova criação ou limpar), tenta buscar da BrasilAPI
         List<LocalDate> feriadosFinais = new ArrayList<>();
@@ -162,20 +167,26 @@ public class AnoLetivoService {
         
         // Remove duplicates and sort
         List<LocalDate> feriadosUnicos = feriadosFinais.stream().distinct().sorted().collect(Collectors.toList());
-        al.setFeriados(feriadosUnicos);
+        anoLetivo.setFeriados(feriadosUnicos);
 
         if (req.semanasAvaliacao() != null) {
             List<SemanaAvaliacao> semanas = req.semanasAvaliacao().stream().map(sReq -> {
-                SemanaAvaliacao s = new SemanaAvaliacao();
-                s.setBimestre(sReq.bimestre());
-                s.setTipo(sReq.tipo());
-                s.setDataInicio(sReq.dataInicio());
-                s.setDataFim(sReq.dataFim());
-                return s;
+                SemanaAvaliacao semanaAvaliacao = new SemanaAvaliacao();
+                semanaAvaliacao.setBimestre(sReq.bimestre());
+                semanaAvaliacao.setTipo(sReq.tipo());
+                semanaAvaliacao.setDataInicio(sReq.dataInicio());
+                semanaAvaliacao.setDataFim(sReq.dataFim());
+                return semanaAvaliacao;
+                // SemanaAvaliacao s = new SemanaAvaliacao();
+                // s.setBimestre(sReq.bimestre());
+                // s.setTipo(sReq.tipo());
+                // s.setDataInicio(sReq.dataInicio());
+                // s.setDataFim(sReq.dataFim());
+                // return s;
             }).collect(Collectors.toList());
-            al.setSemanasAvaliacao(semanas);
+            anoLetivo.setSemanasAvaliacao(semanas);
         } else {
-            al.setSemanasAvaliacao(new ArrayList<>());
+            anoLetivo.setSemanasAvaliacao(new ArrayList<>());
         }
     }
 

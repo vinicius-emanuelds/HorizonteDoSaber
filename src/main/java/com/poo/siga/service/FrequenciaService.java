@@ -56,26 +56,42 @@ public class FrequenciaService {
                 "A aula " + req.numeroAula() + " de " + req.data().getDayOfWeek() + " não corresponde à disciplina " + disciplina.getDescricao() + " na grade desta turma.");
         }
 
-        var f = new Frequencia();
-        f.setTurma(turma);
-        f.setDisciplina(disciplina);
-        f.setAluno(aluno);
-        f.setData(req.data());
-        f.setNumeroAula(req.numeroAula());
-        f.setStatus(req.status());
-        f.setJustificativa(req.justificativa());
-        return FrequenciaResponse.from(frequenciaRepository.save(f));
+        var frequencia = new Frequencia();
+        frequencia.setTurma(turma);
+        frequencia.setDisciplina(disciplina);
+        frequencia.setAluno(aluno);
+        frequencia.setData(req.data());
+        frequencia.setNumeroAula(req.numeroAula());
+        frequencia.setStatus(req.status());
+        frequencia.setJustificativa(req.justificativa());
+        return FrequenciaResponse.from(frequenciaRepository.save(frequencia));
+        // var f = new Frequencia();
+        // f.setTurma(turma);
+        // f.setDisciplina(disciplina);
+        // f.setAluno(aluno);
+        // f.setData(req.data());
+        // f.setNumeroAula(req.numeroAula());
+        // f.setStatus(req.status());
+        // f.setJustificativa(req.justificativa());
+        // return FrequenciaResponse.from(frequenciaRepository.save(f));
     }
 
     @Transactional
     public FrequenciaResponse atualizar(Integer id, FrequenciaRequest req) {
-        var f = frequenciaRepository.findById(id)
+        var frequencia = frequenciaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Frequência não encontrada"));
         // Regra r: bloqueia alterações quando o ano letivo está encerrado
-        anoLetivoService.validarAnoAberto(f.getTurma().getAnoLetivo());
-        f.setStatus(req.status());
-        f.setJustificativa(req.justificativa());
-        return FrequenciaResponse.from(frequenciaRepository.save(f));
+        anoLetivoService.validarAnoAberto(frequencia.getTurma().getAnoLetivo());
+        frequencia.setStatus(req.status());
+        frequencia.setJustificativa(req.justificativa());
+        return FrequenciaResponse.from(frequenciaRepository.save(frequencia));
+        // var f = frequenciaRepository.findById(id)
+        //         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Frequência não encontrada"));
+        // // Regra r: bloqueia alterações quando o ano letivo está encerrado
+        // anoLetivoService.validarAnoAberto(f.getTurma().getAnoLetivo());
+        // f.setStatus(req.status());
+        // f.setJustificativa(req.justificativa());
+        // return FrequenciaResponse.from(frequenciaRepository.save(f));
     }
 
     /**

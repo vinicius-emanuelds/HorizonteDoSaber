@@ -29,31 +29,45 @@ public class DisciplinaService {
 
     @Transactional
     public DisciplinaResponse criar(DisciplinaRequest req) {
-        var d = new Disciplina();
-        d.setCodigo(gerarCodigo());
-        d.setDescricao(req.descricao());
-        d.setCargaHorariaAnual(req.cargaHorariaAnual());
-        return DisciplinaResponse.from(repository.save(d));
+        var disciplina = new Disciplina();
+        disciplina.setCodigo(gerarCodigo());
+        disciplina.setDescricao(req.descricao());
+        disciplina.setCargaHorariaAnual(req.cargaHorariaAnual());
+        return DisciplinaResponse.from(repository.save(disciplina));
+        // var d = new Disciplina();
+        // d.setCodigo(gerarCodigo());
+        // d.setDescricao(req.descricao());
+        // d.setCargaHorariaAnual(req.cargaHorariaAnual());
+        // return DisciplinaResponse.from(repository.save(d));
     }
 
     private String gerarCodigo() {
-        Integer max = repository.findMaxCodigoNumber();
-        return "DISC" + String.format("%04d", (max == null ? 0 : max) + 1);
+        Integer ultimoCodigo = repository.findMaxCodigoNumber();
+        return "DISC" + String.format("%04d", (ultimoCodigo == null ? 0 : ultimoCodigo) + 1);
+        // Integer max = repository.findMaxCodigoNumber();
+        // return "DISC" + String.format("%04d", (max == null ? 0 : max) + 1);
     }
 
     @Transactional
     public DisciplinaResponse atualizar(Integer id, DisciplinaRequest req) {
-        var d = findOrThrow(id);
-        d.setDescricao(req.descricao());
-        d.setCargaHorariaAnual(req.cargaHorariaAnual());
-        return DisciplinaResponse.from(repository.save(d));
+        var disciplina = findOrThrow(id);
+        disciplina.setDescricao(req.descricao());
+        disciplina.setCargaHorariaAnual(req.cargaHorariaAnual());
+        return DisciplinaResponse.from(repository.save(disciplina));
+        // var d = findOrThrow(id);
+        // d.setDescricao(req.descricao());
+        // d.setCargaHorariaAnual(req.cargaHorariaAnual());
+        // return DisciplinaResponse.from(repository.save(d));
     }
 
     @Transactional
     public void inativar(Integer id) {
-        var d = findOrThrow(id);
-        d.setAtivo(false);
-        repository.save(d);
+        var disciplina = findOrThrow(id);
+        disciplina.setAtivo(false);
+        repository.save(disciplina);
+        // var d = findOrThrow(id);
+        // d.setAtivo(false);
+        // repository.save(d);
     }
 
     @Transactional

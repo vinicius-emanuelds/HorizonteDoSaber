@@ -133,12 +133,18 @@ public class TurmaService {
             // Se ainda não adicionamos esta disciplina em TurmaDisciplinaProfessor
             if (!disciplinasTurma.contains(disc.getId())) {
                 disciplinasTurma.add(disc.getId());
-                var tp = new com.poo.siga.model.TurmaDisciplinaProfessor();
-                tp.setTurma(turma);
-                tp.setDisciplina(disc);
+                var turmaPorDisciplinaEProfessor = new com.poo.siga.model.TurmaDisciplinaProfessor();
+                turmaPorDisciplinaEProfessor.setTurma(turma);
+                turmaPorDisciplinaEProfessor.setDisciplina(disc);
                 // Usa o professor específico se mapeado, senão usa o regente
-                tp.setProfessor(mapaEspecificos.containsKey(disc.getId()) ? mapaEspecificos.get(disc.getId()) : regente);
-                turma.getDisciplinasProfessores().add(tp);
+                turmaPorDisciplinaEProfessor.setProfessor(mapaEspecificos.containsKey(disc.getId()) ? mapaEspecificos.get(disc.getId()) : regente);
+                turma.getDisciplinasProfessores().add(turmaPorDisciplinaEProfessor);
+                // var tp = new com.poo.siga.model.TurmaDisciplinaProfessor();
+                // tp.setTurma(turma);
+                // tp.setDisciplina(disc);
+                // // Usa o professor específico se mapeado, senão usa o regente
+                // tp.setProfessor(mapaEspecificos.containsKey(disc.getId()) ? mapaEspecificos.get(disc.getId()) : regente);
+                // turma.getDisciplinasProfessores().add(tp);
             }
         }
     }
