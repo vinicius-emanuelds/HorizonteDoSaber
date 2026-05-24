@@ -40,6 +40,8 @@ public class HomeController {
             Map.entry("/usuario", "Usuários"),
             Map.entry("/turma-detalhe", "Diário de Classe"),
             Map.entry("/relatorios", "Relatórios e Históricos"),
+            Map.entry("/modelos-grade", "Modelos de Grade"),
+            Map.entry("/ano-letivo", "Ano Letivo"),
             Map.entry("/trocar-senha", "Trocar Senha"));
 
     /**
@@ -48,7 +50,7 @@ public class HomeController {
      */
     @GetMapping({ "/", "/aluno", "/professor", "/disciplina", "/turma",
             "/matricula", "/nota", "/frequencia", "/usuario",
-            "/turma-detalhe", "/relatorios", "/trocar-senha" })
+            "/turma-detalhe", "/relatorios", "/trocar-senha" ,"/modelos-grade", "/ano-letivo"})
     public String page(HttpServletRequest request, Model model, Authentication auth)
             throws NoResourceFoundException {
         String path = request.getServletPath();

@@ -71,6 +71,13 @@ public class DisciplinaService {
     }
 
     @Transactional
+    public void ativar(Integer id) {
+        var disciplina = findOrThrow(id);
+        disciplina.setAtivo(true);
+        repository.save(disciplina);
+    }
+
+    @Transactional
     public void excluir(Integer id) {
         findOrThrow(id);
         repository.deleteById(id);

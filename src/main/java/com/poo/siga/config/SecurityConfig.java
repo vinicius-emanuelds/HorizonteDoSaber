@@ -2,6 +2,8 @@ package com.poo.siga.config;
 
 import com.poo.siga.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+        
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
@@ -42,7 +44,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/login", "/trocar-senha").permitAll();
 
                     // Assets estáticos
-                    auth.requestMatchers("/css/**", "/js/**", "/favicon.png", "/manifest.json").permitAll();
+                    auth.requestMatchers("/css/**", "/js/**", "/favicon.png", "/manifest.json",
+                        "/images/**", "/fonts/**", "/webjars/**", "/error").permitAll();
 
                     // Actuator — apenas health básico é público; demais exigem ADMIN
                     auth.requestMatchers("/actuator/health").permitAll();
@@ -59,6 +62,7 @@ public class SecurityConfig {
 
                     // === USUARIOS: Somente ADMIN ===
                     auth.requestMatchers("/api/usuarios/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/modelos-grade/**").hasRole("ADMIN");
 
                     // === NOTAS: ADMIN, COORDENADOR ou PROFESSOR ===
                     auth.requestMatchers(HttpMethod.POST, "/api/notas/**")

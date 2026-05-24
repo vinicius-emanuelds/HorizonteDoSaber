@@ -54,6 +54,12 @@ public class ProfessorController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable Integer id) {
+        service.ativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Integer id) {
         service.excluir(id);

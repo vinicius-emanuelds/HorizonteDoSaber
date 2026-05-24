@@ -66,6 +66,12 @@ public class ProfessorService {
         professor.setAtivo(false);
         repository.save(professor);
     }
+    @Transactional
+    public void ativar(Integer id) {
+        var professor = findOrThrow(id);
+        professor.setAtivo(true);
+        repository.save(professor);
+    }
 
     @Transactional
     public void excluir(Integer id) {

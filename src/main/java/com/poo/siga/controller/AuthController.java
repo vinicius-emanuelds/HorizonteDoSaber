@@ -34,11 +34,11 @@ public class AuthController {
 
         // Cookie seguro para navegação via browser (complementa o token no corpo)
         Cookie jwtCookie = new Cookie("jwt", jwt.token());
-        jwtCookie.setHttpOnly(true);                      // inacessível via JavaScript (proteção XSS)
-        jwtCookie.setSecure(true);                        // apenas via HTTPS
+        jwtCookie.setHttpOnly(true); // inacessível via JavaScript (proteção XSS)
+        jwtCookie.setSecure(true); // apenas via HTTPS
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge((int) (jwtExpiration / 1000)); // converte ms → segundos
-        jwtCookie.setAttribute("SameSite", "Strict");     // proteção CSRF
+        jwtCookie.setAttribute("SameSite", "Strict"); // proteção CSRF
 
         response.addCookie(jwtCookie);
 
