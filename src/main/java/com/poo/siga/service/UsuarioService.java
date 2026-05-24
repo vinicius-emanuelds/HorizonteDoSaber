@@ -36,6 +36,9 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse criar(UsuarioRequest req) {
+        if (req.senha() == null || req.senha().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha é obrigatória na criação de usuário");
+        }
         if (repository.existsByLogin(req.login())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Login já existe");
         }
@@ -55,6 +58,7 @@ public class UsuarioService {
             novoUsuario.setProfessor(professor);
         }
         return UsuarioResponse.from(repository.save(novoUsuario));
+
         // var u = new Usuario();
         // u.setCodigo(gerarCodigo());
         // u.setNomeCompleto(req.nomeCompleto());
@@ -136,15 +140,12 @@ public class UsuarioService {
     public void redefinirSenha(Integer id, String novaSenha) {
         var usuario = findOrThrow(id);
         usuario.setSenha(passwordEncoder.encode(novaSenha));
-        usuario.setPrimeiroAcesso(true);
-        usuario.setDataExpiracaoSenha(LocalDate.now().plusDays(1)); // Expira rápido para forçar troca
+        // Admin definiu uma nova senha explícita — o usuário não precisa trocar novamente
+        usuario.setPrimeiroAcesso(false);
+        usuario.setDataExpiracaoSenha(LocalDate.now().plusDays(90));
         repository.save(usuario);
-        // var u = findOrThrow(id);
-        // u.setSenha(passwordEncoder.encode(novaSenha));
-        // u.setPrimeiroAcesso(true);
-        // u.setDataExpiracaoSenha(LocalDate.now().plusDays(1)); // Expira rápido para forçar troca
-        // repository.save(u);
     }
+
 
     private Usuario findOrThrow(Integer id) {
         return repository.findById(id)

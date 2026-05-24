@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -55,6 +57,11 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
         }
 
+        // Verifica expiração da senha
+        boolean senhaExpirada = usuario.getDataExpiracaoSenha() != null
+                && usuario.getDataExpiracaoSenha().isBefore(LocalDate.now())
+                && !usuario.isPrimeiroAcesso(); // primeiroAcesso já força troca — evita flag dupla
+
         // Login com sucesso - resetar tentativas
         usuario.setTentativasLogin(0);
         usuarioRepository.save(usuario);
@@ -63,19 +70,31 @@ public class AuthService {
 
         String token = jwtUtil.generate(usuario.getLogin(), usuario.getRole().name());
         return new JwtResponse(token, usuario.getRole().name(), usuario.getLogin(),
-                usuario.getNomeCompleto(), usuario.isPrimeiroAcesso());
+                usuario.getNomeCompleto(), usuario.isPrimeiroAcesso(), senhaExpirada);
     }
+
+    /** Senha padrão do sistema — não pode ser usada como nova senha */
+    private static final String SENHA_PADRAO = "Siga2025@";
 
     @Transactional
     public void trocarSenha(String login, String senhaAtual, String novaSenha) {
         var usuario = usuarioRepository.findByLogin(login)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
         if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha atual incorreta");
         }
+        if (SENHA_PADRAO.equals(novaSenha)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A nova senha não pode ser a senha padrão do sistema. Escolha uma senha pessoal.");
+        }
+        if (passwordEncoder.matches(novaSenha, usuario.getSenha())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A nova senha não pode ser igual à senha atual.");
+        }
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuario.setPrimeiroAcesso(false);
-        usuario.setDataExpiracaoSenha(java.time.LocalDate.now().plusDays(90));
+        usuario.setDataExpiracaoSenha(LocalDate.now().plusDays(90));
         usuarioRepository.save(usuario);
         registrarLog(login, "TROCA_SENHA", "SUCESSO", null);
     }

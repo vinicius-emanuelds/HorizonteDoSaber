@@ -4,14 +4,14 @@ services:
     container_name: siga-postgres
     environment:
       POSTGRES_DB: sigadb
-      POSTGRES_USER: siga
-      POSTGRES_PASSWORD: siga123
+      POSTGRES_USER: ${DB_USERNAME:-siga}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}   # obrigatório — defina no .env
     ports:
       - "5432:5432"
     volumes:
       - siga-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U siga -d sigadb"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-siga} -d sigadb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,11 +23,13 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sigadb
-      SPRING_DATASOURCE_USERNAME: siga
-      SPRING_DATASOURCE_PASSWORD: siga123
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create
-      JWT_SECRET: c2lnYS10Y2MtMjAyNi1zZWNyZXQta2V5LW11c3QtYmUtYXQtbGVhc3QtMjU2LWJpdHM=
-      JWT_EXPIRATION: 1800000
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-siga}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}   # obrigatório — defina no .env
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: ${JWT_SECRET}                    # obrigatório — defina no .env
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-1800000}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
     depends_on:
       postgres:
         condition: service_healthy

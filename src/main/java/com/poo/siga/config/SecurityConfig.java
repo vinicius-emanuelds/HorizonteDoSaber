@@ -2,6 +2,7 @@ package com.poo.siga.config;
 
 import com.poo.siga.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,83 +27,91 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
+    /** Swagger habilitado via variável de ambiente — desligado por padrão */
+    @Value("${springdoc.swagger-ui.enabled:false}")
+    private boolean swaggerEnabled;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // Público — login e infra
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        // Assets estáticos
-                        .requestMatchers("/css/**", "/js/**", "/favicon.png", "/manifest.json").permitAll()
+                .authorizeHttpRequests(auth -> {
+                    // Público — login, troca de senha obrigatória e infra
+                    auth.requestMatchers("/auth/**").permitAll();
+                    auth.requestMatchers("/login", "/trocar-senha").permitAll();
 
-                        // Páginas do frontend — precisam de autenticação via JS
-                        // .requestMatchers("/", "/aluno", "/professor", "/turma", "/disciplina",
-                        // "/nota", "/matricula", "/frequencia", "/usuario", "/turma-detalhe",
-                        // "/relatorios").permitAll()
+                    // Assets estáticos
+                    auth.requestMatchers("/css/**", "/js/**", "/favicon.png", "/manifest.json").permitAll();
 
-                        // GETs de API liberados (frontend carrega dados via fetch)
-                        // .requestMatchers(HttpMethod.GET, "/api/**").permitAll() PROBLEMÁTICO, EXPÕE
-                        // DADOS DE USUARIOS
+                    // Actuator — apenas health básico é público; demais exigem ADMIN
+                    auth.requestMatchers("/actuator/health").permitAll();
+                    auth.requestMatchers("/actuator/**").hasRole("ADMIN");
 
-                        // === USUARIOS: Somente ADMIN ===
-                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                    // Swagger/OpenAPI — protegido quando habilitado, bloqueado quando desabilitado
+                    if (swaggerEnabled) {
+                        auth.requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html")
+                                .hasRole("ADMIN");
+                    } else {
+                        auth.requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html")
+                                .denyAll();
+                    }
 
-                        // === NOTAS: ADMIN, COORDENADOR ou PROFESSOR ===
-                        .requestMatchers(HttpMethod.POST, "/api/notas/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/notas/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
+                    // === USUARIOS: Somente ADMIN ===
+                    auth.requestMatchers("/api/usuarios/**").hasRole("ADMIN");
 
-                        // === FREQUENCIA: ADMIN, COORDENADOR ou PROFESSOR ===
-                        .requestMatchers(HttpMethod.POST, "/api/frequencias/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/frequencias/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
+                    // === NOTAS: ADMIN, COORDENADOR ou PROFESSOR ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/notas/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/notas/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR");
 
-                        // === MATRICULAS: ADMIN, COORDENADOR ou OPERADOR ===
-                        .requestMatchers(HttpMethod.POST, "/api/matriculas/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
-                        .requestMatchers(HttpMethod.PATCH, "/api/matriculas/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
+                    // === FREQUENCIA: ADMIN, COORDENADOR ou PROFESSOR ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/frequencias/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/frequencias/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR");
 
-                        // === ALUNOS CRUD: ADMIN, COORDENADOR ou OPERADOR ===
-                        .requestMatchers(HttpMethod.POST, "/api/alunos/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/alunos/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
-                        .requestMatchers(HttpMethod.PATCH, "/api/alunos/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/alunos/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR")
+                    // === MATRICULAS: ADMIN, COORDENADOR ou OPERADOR ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/matriculas/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/matriculas/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
 
-                        // === TURMAS: ADMIN ou COORDENADOR ===
-                        .requestMatchers(HttpMethod.POST, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.PUT, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.PATCH, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR")
+                    // === ALUNOS CRUD: ADMIN, COORDENADOR ou OPERADOR ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/alunos/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/alunos/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/alunos/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/alunos/**")
+                            .hasAnyRole("ADMIN", "COORDENADOR", "OPERADOR");
 
-                        // === PROFESSORES e DISCIPLINAS: Somente ADMIN ===
-                        .requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/professores/**").hasAnyRole("ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.PATCH, "/api/professores/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/professores/**").hasRole("ADMIN")
+                    // === TURMAS: ADMIN ou COORDENADOR ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/turmas/**").hasAnyRole("ADMIN", "COORDENADOR");
 
-                        .requestMatchers(HttpMethod.POST, "/api/disciplinas/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/disciplinas/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/disciplinas/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/disciplinas/**").hasRole("ADMIN")
+                    // === PROFESSORES e DISCIPLINAS: Somente ADMIN ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/professores/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/professores/**").hasAnyRole("ADMIN", "COORDENADOR");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/professores/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/professores/**").hasRole("ADMIN");
 
-                        // === ANO LETIVO: Somente ADMIN pode criar/alterar/encerrar ===
-                        .requestMatchers(HttpMethod.POST, "/api/anos-letivos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/anos-letivos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/anos-letivos/**").hasRole("ADMIN")
+                    auth.requestMatchers(HttpMethod.POST, "/api/disciplinas/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/disciplinas/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/disciplinas/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.DELETE, "/api/disciplinas/**").hasRole("ADMIN");
 
-                        .anyRequest().authenticated())
+                    // === ANO LETIVO: Somente ADMIN pode criar/alterar/encerrar ===
+                    auth.requestMatchers(HttpMethod.POST, "/api/anos-letivos/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PUT, "/api/anos-letivos/**").hasRole("ADMIN");
+                    auth.requestMatchers(HttpMethod.PATCH, "/api/anos-letivos/**").hasRole("ADMIN");
+
+                    auth.anyRequest().authenticated();
+                })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {

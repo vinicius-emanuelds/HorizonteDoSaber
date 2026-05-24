@@ -39,7 +39,8 @@ public class HomeController {
             Map.entry("/frequencia", "Frequência"),
             Map.entry("/usuario", "Usuários"),
             Map.entry("/turma-detalhe", "Diário de Classe"),
-            Map.entry("/relatorios", "Relatórios e Históricos"));
+            Map.entry("/relatorios", "Relatórios e Históricos"),
+            Map.entry("/trocar-senha", "Trocar Senha"));
 
     /**
      * Handler unificado para todas as rotas de página.
@@ -47,7 +48,7 @@ public class HomeController {
      */
     @GetMapping({ "/", "/aluno", "/professor", "/disciplina", "/turma",
             "/matricula", "/nota", "/frequencia", "/usuario",
-            "/turma-detalhe", "/relatorios" })
+            "/turma-detalhe", "/relatorios", "/trocar-senha" })
     public String page(HttpServletRequest request, Model model, Authentication auth)
             throws NoResourceFoundException {
         String path = request.getServletPath();
@@ -58,7 +59,9 @@ public class HomeController {
         }
 
         model.addAttribute("pageTitle", titulo);
-        adicionarRoles(model, auth);
+        if (auth != null) {
+            adicionarRoles(model, auth);
+        }
 
         // O nome do template corresponde ao path sem a barra inicial (ex: "/aluno" →
         // "aluno")

@@ -10,14 +10,30 @@
     </div>
     <script>
         window.addEventListener('load', function () {
-            if (!localStorage.getItem('token') && window.location.pathname !== '/login') {
+            const token = localStorage.getItem('token');
+            if (!token && window.location.pathname !== '/login') {
                 window.location.replace('/login');
                 return;
             }
-            const nome = localStorage.getItem('nome');
+
+            // Guarda de troca de senha obrigatória — intercepta QUALQUER página interna
+            if (window.location.pathname !== '/trocar-senha') {
+                const primeiroAcesso = localStorage.getItem('primeiroAcesso') === 'true';
+                const senhaExpirada  = localStorage.getItem('senhaExpirada')  === 'true';
+                if (primeiroAcesso) {
+                    window.location.replace('/trocar-senha?obrigatorio=1');
+                    return;
+                }
+                if (senhaExpirada) {
+                    window.location.replace('/trocar-senha?expirada=1');
+                    return;
+                }
+            }
+
+            const nome  = localStorage.getItem('nome');
             const login = localStorage.getItem('login');
-            const finalNome = (nome && nome !== "null") ? nome : ((login && login !== "null") ? login : 'Usuário');
-            const role = localStorage.getItem('role') || '';
+            const finalNome = (nome && nome !== 'null') ? nome : ((login && login !== 'null') ? login : 'Usuário');
+            const role  = localStorage.getItem('role') || '';
             const roleLabels = { 'ADMIN': 'Administrador', 'COORDENADOR': 'Coordenador', 'OPERADOR': 'Operador', 'PROFESSOR': 'Professor' };
 
             document.getElementById('topbarUserName').textContent = finalNome;

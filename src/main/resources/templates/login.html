@@ -98,6 +98,7 @@
                 localStorage.setItem('login', data.login);
                 localStorage.setItem('nome', data.nome);
                 localStorage.setItem('primeiroAcesso', data.primeiroAcesso);
+                localStorage.setItem('senhaExpirada',  data.senhaExpirada || false);
 
                 // Salva também em cookie para que o browser envie nas navegações de página
                 setCookieJwt(data.token);
@@ -105,8 +106,13 @@
                 btnText.textContent = 'Autenticado! Redirecionando...';
                 btn.classList.add('btn-success');
 
+                // Redireciona: troca obrigatória tem prioridade sobre a home
+                const motivo = data.primeiroAcesso ? 'obrigatorio'
+                             : data.senhaExpirada  ? 'expirada'
+                             : null;
+
                 setTimeout(() => {
-                    window.location.href = '/';
+                    window.location.href = motivo ? '/trocar-senha?' + motivo + '=1' : '/';
                 }, 500);
             } catch (err) {
                 errDiv.textContent = err.message;
@@ -130,81 +136,8 @@
             errDiv.style.color = '#856404';
             errDiv.style.borderColor = '#ffc107';
         }
-        /**
- * auth.js — Interceptor global de autenticação JWT.
- */
-
-        // ─── Gerenciamento de cookie ──────────────────────────────────────────────────
-
-        /**
-         * Salva o JWT em cookie com validade de 1 dia.
-         * O browser envia este cookie automaticamente em toda navegação de página,
-         * permitindo que o JwtAuthFilter autentique requisições SSR.
-         */
-        function setCookieJwt(token) {
-            const expira = new Date();
-            expira.setTime(expira.getTime() + (24 * 60 * 60 * 1000));
-            document.cookie = [
-                'jwt=' + token,
-                'expires=' + expira.toUTCString(),
-                'path=/',
-                'SameSite=Strict'
-            ].join('; ');
-        }
-
-        // ─── Headers para chamadas fetch ─────────────────────────────────────────────
-
-        function authHeaders(extra = {}) {
-            const token = localStorage.getItem('token');
-            return {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
-                ...extra
-            };
-        }
-
-        // ─── Wrapper fetch com interceptação 401/403 ─────────────────────────────────
-
-        async function apiFetch(url, opts = {}) {
-            const options = {
-                ...opts,
-                headers: {
-                    ...authHeaders(),
-                    ...(opts.headers || {})
-                }
-            };
-
-            let response;
-            try {
-                response = await fetch(url, options);
-            } catch (err) {
-                throw err;
-            }
-
-            if (response.status === 401 || response.status === 403) {
-                logout(true);
-                throw new Error('Sessão expirada ou sem permissão. Redirecionando para login...');
-            }
-
-            return response;
-        }
-
-        // ─── Logout ──────────────────────────────────────────────────────────────────
-
-        function logout(expired = false) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('role');
-            localStorage.removeItem('login');
-            localStorage.removeItem('nome');
-            localStorage.removeItem('primeiroAcesso');
-
-            // Remove o cookie jwt para que o backend não reconheça mais a sessão
-            document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict';
-
-            window.location.href = '/login' + (expired ? '?expired=1' : '');
-        }
     </script>
+    <script src="/js/auth.js"></script>
 </body>
 
 </html>

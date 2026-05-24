@@ -1,6 +1,7 @@
 package com.poo.siga.controller;
 
 import com.poo.siga.dto.usuario.*;
+import com.poo.siga.dto.usuario.RedefinirSenhaRequest;
 import com.poo.siga.model.enums.Role;
 import com.poo.siga.service.UsuarioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -14,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -63,9 +64,10 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/redefinir-senha")
-    public ResponseEntity<Void> redefinirSenha(@PathVariable Integer id,
-                                                @RequestBody Map<String, String> body) {
-        service.redefinirSenha(id, body.get("novaSenha"));
+    public ResponseEntity<Void> redefinirSenha(
+            @PathVariable Integer id,
+            @RequestBody @Valid RedefinirSenhaRequest req) {
+        service.redefinirSenha(id, req.novaSenha());
         return ResponseEntity.noContent().build();
     }
 }

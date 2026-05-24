@@ -20,7 +20,11 @@
                 <div class="col-md-6"><label class="form-label">Nome Completo *</label><input type="text" class="form-control" id="userNome" required></div>
                 <div class="col-md-6"><label class="form-label">E-mail *</label><input type="email" class="form-control" id="userEmail" required></div>
                 <div class="col-md-4"><label class="form-label">Login *</label><input type="text" class="form-control" id="userLogin" required></div>
-                <div class="col-md-4"><label class="form-label">Senha *</label><input type="password" class="form-control" id="userSenha" required></div>
+                <div class="col-md-4">
+                    <label class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="userSenha" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+                    <small id="senhaHelp" style="display:none; font-size:12px; margin-top:4px; line-height:1.4"></small>
+                </div>
                 <div class="col-md-4"><label class="form-label">Perfil *</label><select class="form-select" id="userRole" required>
                     <option value="ADMIN">Administrador</option><option value="COORDENADOR">Coordenador</option><option value="OPERADOR">Operador</option><option value="PROFESSOR">Professor</option>
                 </select></div>

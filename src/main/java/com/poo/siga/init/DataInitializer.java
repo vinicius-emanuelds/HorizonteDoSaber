@@ -283,7 +283,10 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void criarUsuarios(List<Professor> professores) {
-        String senhaPadrao = passwordEncoder.encode("1234");
+        // Senha padrão pública do seed — todos os usuários devem trocar no primeiro acesso.
+        final String SENHA_PADRAO = "Siga2025@";
+        String senhaPadrao = passwordEncoder.encode(SENHA_PADRAO);
+        log.info("=== Seed: senha padrão inicial = '{}' (todos devem trocar no 1º acesso) ===", SENHA_PADRAO);
 
         // 4 Administradores
         criarUser("Carlos Henrique Almeida", "carlos.almeida@horizonte.edu.br", "admin", senhaPadrao, Role.ADMIN);
@@ -312,12 +315,13 @@ public class DataInitializer implements CommandLineRunner {
             u.setRole(Role.PROFESSOR);
             u.setProfessor(p);
             u.setDataCadastro(LocalDateTime.now());
-            u.setDataExpiracaoSenha(LocalDate.now().plusDays(90));
-            u.setPrimeiroAcesso(false);
+            u.setDataExpiracaoSenha(LocalDate.now().plusDays(1)); // expira rápido para forçar troca
+            u.setPrimeiroAcesso(true); // força troca de senha no primeiro login
             usuarioRepository.save(u);
         }
         log.info("✅ {} usuários criados", 9 + professores.size());
     }
+
 
     private Usuario criarUser(String nome, String email, String login, String senha, Role role) {
         var u = new Usuario();
@@ -328,8 +332,8 @@ public class DataInitializer implements CommandLineRunner {
         u.setSenha(senha);
         u.setRole(role);
         u.setDataCadastro(LocalDateTime.now());
-        u.setDataExpiracaoSenha(LocalDate.now().plusDays(90));
-        u.setPrimeiroAcesso(false);
+        u.setDataExpiracaoSenha(LocalDate.now().plusDays(1)); // expira rápido para forçar troca
+        u.setPrimeiroAcesso(true); // força troca de senha no primeiro login
         return usuarioRepository.save(u);
     }
 

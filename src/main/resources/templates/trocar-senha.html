@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trocar Senha - SIGA Horizonte do Saber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        /* ── Barra de força de senha ── */
+        .strength-bar-wrap {
+            height: 6px;
+            background: #e0e6ed;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .strength-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+            width: 0%;
+        }
+
+        /* ── Regras de senha ── */
+        .password-rules { list-style: none; padding: 0; margin: 10px 0 0; }
+        .password-rules li {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 3px 0;
+            transition: color 0.2s;
+        }
+        .password-rules li .rule-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+            border: 1.5px solid var(--text-muted);
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .password-rules li.ok { color: var(--success); }
+        .password-rules li.ok .rule-icon {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+        }
+
+        /* ── Card de troca de senha ── */
+        .change-card {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .change-card h2 { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .change-card .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.5; }
+
+        .alert-obrigatorio {
+            background: rgba(243,156,18,0.12);
+            color: #b7760a;
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-expirada {
+            background: rgba(231,76,60,0.1);
+            color: #c0392b;
+            border: 1px solid rgba(231,76,60,0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .input-password-wrap {
+            position: relative;
+        }
+        .input-password-wrap .toggle-pw {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 16px;
+            padding: 0;
+            line-height: 1;
+        }
+        .input-password-wrap .toggle-pw:hover { color: var(--primary); }
+        .input-password-wrap .form-control { padding-right: 42px; }
+
+        .btn-change {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border: none;
+            color: #fff;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: var(--transition);
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-change:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26,82,118,0.3);
+        }
+        .btn-change:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        .strength-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-align: right;
+            margin-top: 4px;
+            transition: color 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+<div class="login-page">
+    <!-- Lado esquerdo — identidade visual -->
+    <div class="login-left">
+        <div style="margin-bottom: 24px">
+            <i class="bi bi-shield-lock-fill" style="font-size: 64px; opacity: 0.9"></i>
+        </div>
+        <h1>Segurança da Conta</h1>
+        <p>Mantenha sua conta protegida com uma senha forte e exclusiva.</p>
+        <div style="margin-top: 40px; display:flex; flex-direction:column; gap:16px; opacity:0.75; font-size:13px; max-width:300px">
+            <div style="display:flex; align-items:center; gap:12px">
+                <i class="bi bi-check2-circle" style="font-size:20px; color:#2ecc71"></i>
+                <span>Mínimo de 8 caracteres</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px">
+                <i class="bi bi-check2-circle" style="font-size:20px; color:#2ecc71"></i>
+                <span>Letras maiúsculas e minúsculas</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px">
+                <i class="bi bi-check2-circle" style="font-size:20px; color:#2ecc71"></i>
+                <span>Pelo menos um número</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px">
+                <i class="bi bi-check2-circle" style="font-size:20px; color:#2ecc71"></i>
+                <span>Não pode ser a senha padrão do sistema</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lado direito — formulário -->
+    <div class="login-right" style="padding: 20px">
+        <div class="change-card">
+            <h2><i class="bi bi-key-fill me-2" style="color:var(--primary)"></i>Trocar Senha</h2>
+            <p class="subtitle" id="subtitleMsg">Defina uma nova senha para sua conta.</p>
+
+            <!-- Alertas contextuais -->
+            <div class="alert-obrigatorio" id="alertObrigatorio" style="display:none">
+                <i class="bi bi-exclamation-triangle-fill" style="font-size:18px; flex-shrink:0; margin-top:1px"></i>
+                <span><strong>Troca obrigatória:</strong> Esta é a sua senha padrão inicial. Por segurança, você precisa definir uma senha pessoal antes de continuar.</span>
+            </div>
+            <div class="alert-expirada" id="alertExpirada" style="display:none">
+                <i class="bi bi-clock-history" style="font-size:18px; flex-shrink:0; margin-top:1px"></i>
+                <span><strong>Senha expirada:</strong> Sua senha atingiu o prazo de validade de 90 dias. Defina uma nova senha para continuar.</span>
+            </div>
+
+            <form id="formTrocarSenha" onsubmit="return handleTrocarSenha(event)" novalidate>
+                <!-- Senha atual -->
+                <div class="mb-3">
+                    <label class="form-label">Senha Atual</label>
+                    <div class="input-password-wrap">
+                        <input type="password" class="form-control" id="senhaAtual"
+                               placeholder="Digite sua senha atual" autocomplete="current-password">
+                        <button type="button" class="toggle-pw" onclick="togglePw('senhaAtual', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nova senha + indicador de força -->
+                <div class="mb-1">
+                    <label class="form-label">Nova Senha</label>
+                    <div class="input-password-wrap">
+                        <input type="password" class="form-control" id="novaSenha"
+                               placeholder="Mínimo 8 caracteres" autocomplete="new-password"
+                               oninput="avaliarForca(this.value)">
+                        <button type="button" class="toggle-pw" onclick="togglePw('novaSenha', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Barra de força -->
+                    <div class="strength-bar-wrap">
+                        <div class="strength-bar-fill" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-label" id="strengthLabel" style="color:var(--text-muted)"></div>
+                </div>
+
+                <!-- Regras visuais -->
+                <ul class="password-rules mb-3" id="passwordRules">
+                    <li id="rule-len">
+                        <span class="rule-icon"><i class="bi bi-check"></i></span>
+                        Mínimo de 8 caracteres
+                    </li>
+                    <li id="rule-upper">
+                        <span class="rule-icon"><i class="bi bi-check"></i></span>
+                        Uma letra maiúscula (A–Z)
+                    </li>
+                    <li id="rule-lower">
+                        <span class="rule-icon"><i class="bi bi-check"></i></span>
+                        Uma letra minúscula (a–z)
+                    </li>
+                    <li id="rule-digit">
+                        <span class="rule-icon"><i class="bi bi-check"></i></span>
+                        Um número (0–9)
+                    </li>
+                    <li id="rule-default">
+                        <span class="rule-icon"><i class="bi bi-check"></i></span>
+                        Diferente da senha padrão do sistema
+                    </li>
+                </ul>
+
+                <!-- Confirmar nova senha -->
+                <div class="mb-4">
+                    <label class="form-label">Confirmar Nova Senha</label>
+                    <div class="input-password-wrap">
+                        <input type="password" class="form-control" id="confirmarSenha"
+                               placeholder="Repita a nova senha" autocomplete="new-password"
+                               oninput="verificarConfirmacao()">
+                        <button type="button" class="toggle-pw" onclick="togglePw('confirmarSenha', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <div id="confirmacaoMsg" style="font-size:12px; margin-top:5px; display:none"></div>
+                </div>
+
+                <button type="submit" class="btn-change" id="btnTrocar" disabled>
+                    <span id="btnText"><i class="bi bi-arrow-repeat me-2"></i>Atualizar Senha</span>
+                    <span id="btnSpinner" class="spinner-border spinner-border-sm" style="display:none"></span>
+                </button>
+            </form>
+
+            <div id="linkCancelar" style="text-align:center; margin-top:20px; display:none">
+                <a href="/" style="font-size:13px; color:var(--text-muted); text-decoration:none">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar ao sistema
+                </a>
+            </div>
+
+            <div style="text-align:center; margin-top:24px; font-size:12px; color:var(--text-muted)">
+                SIGA v2.0 • Horizonte do Saber © 2026
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+    /* ─── Contexto da página ────────────────────────────────────────── */
+    const params     = new URLSearchParams(window.location.search);
+    const obrigatorio = params.has('obrigatorio');
+    const expirada    = params.has('expirada');
+    const SENHA_PADRAO = 'Siga2025@';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Mostra alerta contextual
+        if (obrigatorio) {
+            document.getElementById('alertObrigatorio').style.display = 'flex';
+            document.getElementById('subtitleMsg').textContent =
+                'Bem-vindo(a)! Defina sua senha pessoal para acessar o sistema.';
+        } else if (expirada) {
+            document.getElementById('alertExpirada').style.display = 'flex';
+            document.getElementById('subtitleMsg').textContent =
+                'Sua senha expirou. Defina uma nova senha para continuar.';
+        } else {
+            // Mudança voluntária — mostrar link de cancelar
+            document.getElementById('linkCancelar').style.display = 'block';
+        }
+
+        // Verifica se tem token (usuário autenticado)
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/login');
+            return;
+        }
+    });
+
+    /* ─── Toggle mostrar/ocultar senha ─────────────────────────────── */
+    function togglePw(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon  = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    /* ─── Avaliador de força de senha ──────────────────────────────── */
+    function avaliarForca(senha) {
+        const rules = {
+            len:     senha.length >= 8,
+            upper:   /[A-Z]/.test(senha),
+            lower:   /[a-z]/.test(senha),
+            digit:   /\d/.test(senha),
+            default: senha !== SENHA_PADRAO && senha.length > 0
+        };
+
+        // Atualiza ícones das regras
+        Object.entries(rules).forEach(([key, ok]) => {
+            const li = document.getElementById('rule-' + key);
+            if (li) li.classList.toggle('ok', ok);
+        });
+
+        // Calcula pontuação (0-5)
+        const score = Object.values(rules).filter(Boolean).length;
+
+        const bar   = document.getElementById('strengthBar');
+        const label = document.getElementById('strengthLabel');
+
+        const configs = [
+            { w: '0%',   bg: '#e0e6ed', txt: '',             color: 'var(--text-muted)' },
+            { w: '20%',  bg: '#e74c3c', txt: 'Muito fraca',  color: '#e74c3c' },
+            { w: '40%',  bg: '#e67e22', txt: 'Fraca',        color: '#e67e22' },
+            { w: '60%',  bg: '#f39c12', txt: 'Razoável',     color: '#f39c12' },
+            { w: '80%',  bg: '#2ecc71', txt: 'Boa',          color: '#27ae60' },
+            { w: '100%', bg: '#27ae60', txt: 'Excelente',    color: '#27ae60' }
+        ];
+
+        const cfg = configs[senha.length === 0 ? 0 : Math.min(score, 5)];
+        bar.style.width      = cfg.w;
+        bar.style.background = cfg.bg;
+        label.textContent    = cfg.txt;
+        label.style.color    = cfg.color;
+
+        // Revalida confirmação
+        verificarConfirmacao();
+        atualizarBotao(rules);
+    }
+
+    /* ─── Verificação de confirmação ────────────────────────────────── */
+    function verificarConfirmacao() {
+        const nova      = document.getElementById('novaSenha').value;
+        const confirmar = document.getElementById('confirmarSenha').value;
+        const msg       = document.getElementById('confirmacaoMsg');
+
+        if (!confirmar) { msg.style.display = 'none'; return; }
+
+        if (nova === confirmar) {
+            msg.style.display = 'block';
+            msg.innerHTML     = '<i class="bi bi-check-circle-fill me-1" style="color:#27ae60"></i><span style="color:#27ae60">Senhas conferem</span>';
+        } else {
+            msg.style.display = 'block';
+            msg.innerHTML     = '<i class="bi bi-x-circle-fill me-1" style="color:#e74c3c"></i><span style="color:#e74c3c">As senhas não coincidem</span>';
+        }
+        atualizarBotao();
+    }
+
+    /* ─── Habilitar/desabilitar botão ───────────────────────────────── */
+    function atualizarBotao(rules) {
+        if (!rules) {
+            const nova = document.getElementById('novaSenha').value;
+            rules = {
+                len:     nova.length >= 8,
+                upper:   /[A-Z]/.test(nova),
+                lower:   /[a-z]/.test(nova),
+                digit:   /\d/.test(nova),
+                default: nova !== SENHA_PADRAO && nova.length > 0
+            };
+        }
+        const todasOk     = Object.values(rules).every(Boolean);
+        const nova        = document.getElementById('novaSenha').value;
+        const confirmar   = document.getElementById('confirmarSenha').value;
+        const senhaAtual  = document.getElementById('senhaAtual').value;
+        const confirmOk   = nova === confirmar && confirmar.length > 0;
+
+        document.getElementById('btnTrocar').disabled = !(todasOk && confirmOk && senhaAtual.length > 0);
+    }
+
+    // Habilitar botão ao digitar na senha atual
+    document.getElementById('senhaAtual').addEventListener('input', () => atualizarBotao());
+
+    /* ─── Submit ─────────────────────────────────────────────────────── */
+    async function handleTrocarSenha(e) {
+        e.preventDefault();
+        const senhaAtual  = document.getElementById('senhaAtual').value;
+        const novaSenha   = document.getElementById('novaSenha').value;
+        const confirmar   = document.getElementById('confirmarSenha').value;
+        const btn         = document.getElementById('btnTrocar');
+        const btnText     = document.getElementById('btnText');
+        const btnSpinner  = document.getElementById('btnSpinner');
+
+        // Validações client-side
+        if (!senhaAtual) {
+            showToast('Digite sua senha atual.', 'warning');
+            document.getElementById('senhaAtual').focus();
+            return;
+        }
+        if (novaSenha === SENHA_PADRAO) {
+            showToast('A nova senha não pode ser a senha padrão do sistema.', 'error');
+            return;
+        }
+        if (novaSenha !== confirmar) {
+            showToast('As senhas não coincidem. Verifique e tente novamente.', 'error');
+            return;
+        }
+
+        btn.disabled      = true;
+        btnText.style.display  = 'none';
+        btnSpinner.style.display = 'inline-block';
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/auth/trocar-senha', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ senhaAtual, novaSenha })
+            });
+
+            if (res.status === 401) {
+                showToast('Senha atual incorreta. Tente novamente.', 'error');
+                document.getElementById('senhaAtual').value = '';
+                document.getElementById('senhaAtual').focus();
+                return;
+            }
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                const msg = err.novaSenha || err.erro || 'Erro ao trocar senha. Tente novamente.';
+                showToast(msg, 'error', 6000);
+                return;
+            }
+
+            // Sucesso — limpa flags de primeiro acesso
+            localStorage.setItem('primeiroAcesso', 'false');
+            localStorage.setItem('senhaExpirada',  'false');
+            showToast('Senha alterada com sucesso! Redirecionando...', 'success');
+
+            setTimeout(() => { window.location.replace('/'); }, 1800);
+
+        } catch (err) {
+            showToast('Erro de conexão. Verifique sua rede e tente novamente.', 'error');
+        } finally {
+            btn.disabled         = false;
+            btnText.style.display  = 'inline';
+            btnSpinner.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
