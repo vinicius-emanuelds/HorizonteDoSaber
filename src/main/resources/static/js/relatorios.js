@@ -81,7 +81,8 @@ async function gerarBoletim() {
       freqJ = 0;
 
     if (mat) {
-      turmaNome = `Turma ${mat.serie}º ${mat.turmaTurno} (Cod: ${mat.turmaId})`;
+      // turmaNome = `Turma ${mat.serie}º ${mat.turmaTurno} (Cod: ${mat.turmaId})`; mat.turmaTurno = Undefined
+      turmaNome = `Turma ${mat.turmaIdentificacao}`;
       // no MVP calculamos presenca global por fetch das frequencias global
       const freqs = await (
         await apiFetch(`/api/frequencias/aluno/${aluno.id}`)
@@ -239,11 +240,11 @@ async function gerarBoletim() {
 
     document.getElementById("boletimBody").innerHTML = tbody;
 
-    let finalSit = "";
+    let finalSit = '<span class="badge bg-success">Em Curso</span>';;
     if (mat) {
-      if (dependencias === 0) {
-        finalSit = '<span class="badge bg-success">Aprovado por Notas</span>';
-      } else {
+      if (dependencias === 0 && mat.situacao === "CONCLUIDA") {
+        finalSit = '<span class="badge bg-success">Aprovado</span>';
+      } else if (dependencias > 0) {
         finalSit = ` <span class="badge bg-danger">Em Recuperação (${dependencias} disc.)</span>`;
       }
     } else {

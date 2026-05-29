@@ -3,7 +3,6 @@ package com.poo.siga.config;
 import com.poo.siga.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,7 +61,7 @@ public class SecurityConfig {
 
                     // === USUARIOS: Somente ADMIN ===
                     auth.requestMatchers("/api/usuarios/**").hasRole("ADMIN");
-                    auth.requestMatchers("/api/modelos-grade/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/modelos-grade/**").hasAnyRole("ADMIN", "COORDENADOR");
 
                     // === NOTAS: ADMIN, COORDENADOR ou PROFESSOR ===
                     auth.requestMatchers(HttpMethod.POST, "/api/notas/**")

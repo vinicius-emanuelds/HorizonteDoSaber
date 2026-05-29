@@ -71,6 +71,7 @@ document.getElementById('turmaAno').addEventListener('change', carregarModelos);
 document.getElementById('turmaSerie').addEventListener('change', carregarModelos);
 
 function abrirModal(t) {
+    console.log(t);
     document.getElementById('modalTitle').textContent = t ? 'Editar Turma' : 'Nova Turma';
     document.getElementById('turmaId').value = t?.id || '';
     document.getElementById('turmaAno').value = t?.anoLetivo || 2026;
